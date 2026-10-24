@@ -82,6 +82,26 @@ git tag -d android-before-update
 
 Push as GitHub user olivergrosche (`gh auth status`).
 
+## 6. Release
+
+Releases are named `android-N` (android-1 to android-3 in October 2026).
+
+1. In the Android preset of `C7/export_presets.cfg`, raise `version/code` by one and set `version/name="android-N (OpenCiv3 <upstream version>)"`. Commit as "Release android-N".
+2. `android-port/scripts/build-apk.sh`. The APK is signed with `openciv3android.keystore`; a build with any other key cannot update installed copies.
+3. **Test as a new player before publishing**, on one device. `deploy.sh` grants file access by itself, so it does not count.
+   - Move `Documents/OpenCiv3` aside, `adb uninstall io.github.olivergrosche.openciv3android`, install the APK.
+   - Follow the release notes step by step: setup screen, "All files access", unpacking, restart, Civ3 found, Quick Start, saving and loading.
+   - Every sentence of the notes must have been seen working.
+   - Afterwards put `Documents/OpenCiv3` back and start the app once. It updates the data and keeps `C7.ini` and `Saves`.
+4. Push, then publish with the APK and the Giant Earth zip (see README, "Giant Earth"). Start the notes from the previous release (`gh release view android-<N-1> --json body -q .body`) and replace its "Changes since" section:
+
+   ```
+   gh release create android-N --repo olivergrosche/openciv3android --target "$(git rev-parse origin/android)" \
+     --title "openciv3android N" --notes-file notes.md openciv3android-N.apk giant-earth-openciv3android.zip
+   ```
+
+   The newest release becomes "Latest". If an older one is broken, put a warning at the top of its notes instead of deleting it.
+
 ## Godot version change
 
 - **Upstream moves to Godot 4.5 or newer:** the patched template is no longer needed, because 4.5 loads the .NET assemblies differently.

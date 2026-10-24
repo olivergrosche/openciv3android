@@ -96,6 +96,13 @@ The APK carries the game data (`Assets`, `Lua`, `Text`) as `AndroidData/data.zip
   - The full-screen views are fixed 1024x768 layouts and already fill the height. The magnifier is the answer for them.
 - **Advisors:** F1-F11 do not exist on a tablet. On Android the advisor button opens a list of all advisors and screens (`Game.AdvisorMenu`).
 - **Popups** (`InteractablePopUpController`): translated, larger, and one tap chooses an option.
+- **Civ3 media** (`MainMenu.cs`): the main menu switch "Grafik: Civilization III / OpenCiv3" shows the media in use. Without Civ3 files it opens the folder dialog, which accepts `Conquests`, `civ3PTW` or `Art` for their parent and keeps the old setting on a wrong pick. The "Civ3 not found" options stay left of the sidebar.
+- **Dialogs** (Godot's own file dialog, on Android):
+  - `AndroidBootstrap.FitDialogForTouch` makes them larger only as far as content and title bar still fit the screen, and centers them; before, phones cut off Open/Cancel.
+  - `StyleDialogButtons` gives the buttons light text on brown, because the game's theme drew them black on dark grey.
+  - Saved games go to `Documents/OpenCiv3/Saves` (`Civ3FileDialog.DirectoryFor`). A copied Civ3 has no `Conquests/Saves`, and for a missing folder the dialog showed the top of the shared storage.
+- **Loading notice** (all platforms, `UIElements/LoadingOverlay.cs`): "Spiel wird geladen …" from the choice (load, scenario, Quick Start) until the first unit is selected, and "Spiel wird gespeichert …" while saving. Giant Earth takes about 15 s to load on the Pixel.
+- **Keys and dialogs** (all platforms, `Game.ProcessActions`): actions are polled, so the Enter that confirmed the save dialog also ended the turn, and letters typed into a file name reached the game as unit commands. No actions while a dialog window is open or in the two frames after it closed.
 - **Ambient sounds** (all platforms), in `C7/Audio/AmbienceSoundscape.cs`:
   - Like Civ3: every 8-20 s, a lark, cricket, oriole, hawk, eagle or wolf plays, chosen by the terrain of a random known land tile on screen.
   - The sounds are the eight files in `Sounds/Ambience Sfx`, set up in `C7/Lua/civ3/audio.lua`.
