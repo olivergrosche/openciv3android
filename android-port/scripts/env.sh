@@ -12,7 +12,6 @@ source "$SCRIPTS/env.local.sh"
 DOTNET_DIR="$TOOLBOX/dotnet"                       # .NET SDK 8 (not on PATH)
 GODOT="$TOOLBOX/godot/Godot_v4.4.1-stable_mono_win64/Godot_v4.4.1-stable_mono_win64_console.exe"
 ADB="$ANDROID_SDK/platform-tools/adb.exe"
-GERMAN_BIQ="$TOOLBOX/Civ3/Conquests/Conquests.biq" # rules file of the German Civ3 patch, source of names.csv
 TEMPLATE="$TOOLBOX/godot-templates/android_release_4.4.1_tpafix.apk"
 
 REPO="$(cd "$SCRIPTS/../.." && pwd)"

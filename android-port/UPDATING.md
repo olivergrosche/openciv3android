@@ -40,7 +40,7 @@ android-port/scripts/init-submodules.sh         # the Assets submodule moves wit
 android-port/scripts/update-translations.sh
 ```
 
-This regenerates `names.csv` (local only: it is Civ3 content, git ignores it). It then lists the interface texts that have no German yet: add them to `android-port/l10n/ui_de.tsv` and run it again.
+This regenerates `names.csv` and `ui.csv`. It then lists the names and interface texts that have no German yet: add names (new units, cities…) to `android-port/l10n/names_de.tsv`, also when German keeps the English name, and texts to `android-port/l10n/ui_de.tsv`. Run it again.
 - Scene placeholders that code overwrites can stay untranslated (`Placeholder City`, `Income: 1234`).
 - New texts built with `$"..."` in code are not found automatically. Look through the upstream diff for new popups (`Game_EmitMessages.cs`, `MsgShowTemporaryPopup`) and wrap them in `L.F`.
 

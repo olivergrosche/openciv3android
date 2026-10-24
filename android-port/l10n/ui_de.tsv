@@ -1,5 +1,5 @@
 # German texts for the OpenCiv3 interface: English<TAB>German, one per line. "\n" stands for a line break.
-# Names of units, techs, buildings, civilizations etc. are not here: they are generated into names.csv by Civ3Names.
+# Names of units, techs, buildings, civilizations etc. are not here but in names_de.tsv.
 # make-ui-csv.pl turns this file into C7/Translations/ui.csv (android-port/scripts/update-translations.sh).
 (-- turns)	(-- Runden)
 (9999999 turns)	(9999999 Runden)

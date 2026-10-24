@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Installs android-port/out/OpenCiv3.apk on a device. Installing ends a running game: save first.
+# Installs android-port/out/openciv3android.apk on a device. Installing ends a running game: save first.
 #   android-port/scripts/deploy.sh tablet|pixel|<adb serial> [--data]
 # --data also replaces Assets, Lua and Text in Documents/OpenCiv3 (needed after upstream updates; the old folders are
 # moved to Documents/OpenCiv3-previous). Civ3 itself (Documents/Civ3) and C7.ini are never touched.
@@ -12,7 +12,7 @@ case "${1:-}" in
 	"") echo "usage: deploy.sh tablet|pixel|<adb serial> [--data]" >&2; exit 1 ;;
 	*) DEV=$1 ;;
 esac
-PKG=io.github.c7game.openciv3
+PKG=io.github.olivergrosche.openciv3android
 adb() { "$ADB" -s "$DEV" "$@"; }
 
 adb shell am force-stop $PKG || true
@@ -29,7 +29,7 @@ fi
 # Some devices check apps installed over adb and block or delay them; switch that off for the install only.
 verify=$(adb shell settings get global verifier_verify_adb_installs | tr -d '\r')
 adb shell settings put global verifier_verify_adb_installs 0
-adb install -r "$(cygpath -w "$OUT/OpenCiv3.apk")"
+adb install -r "$(cygpath -w "$OUT/openciv3android.apk")"
 if [ "$verify" = "null" ]; then
 	adb shell settings delete global verifier_verify_adb_installs
 else
@@ -40,3 +40,8 @@ fi
 adb shell appops set $PKG MANAGE_EXTERNAL_STORAGE allow
 adb shell am start -n $PKG/com.godot.game.GodotApp > /dev/null
 echo "Installed on $DEV"
+
+# Until October 2026 the app was io.github.c7game.openciv3; it shares the data folder but is a separate app.
+if adb shell pm list packages io.github.c7game.openciv3 | grep -q .; then
+	echo "The old app io.github.c7game.openciv3 is still installed: adb -s $DEV uninstall io.github.c7game.openciv3"
+fi

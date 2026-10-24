@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Builds android-port/out/OpenCiv3.apk from the working tree.
+# Builds android-port/out/openciv3android.apk from the working tree.
 #   android-port/scripts/build-apk.sh
 set -euo pipefail
 source "$(dirname "$0")/env.sh"
@@ -17,9 +17,6 @@ if [ ! -f Assets/README.md ] || [ ! -f addons/markdownlabel/README.md ]; then
 	echo "Submodules missing: run android-port/scripts/init-submodules.sh" >&2
 	exit 1
 fi
-if [ ! -f Translations/names.csv ]; then
-	echo "Note: no Translations/names.csv, so names of units, civilizations etc. stay English (update-translations.sh)." >&2
-fi
 
 # export_presets.cfg refers to the template by this path relative to C7, so the preset holds no local paths.
 cp -u "$TEMPLATE" "$OUT/android-template.apk"
@@ -32,11 +29,11 @@ touch Assets/.gdignore
 dotnet build C7.csproj -c Debug -nologo -v q
 "$GODOT" --headless --path . --import > "$OUT/import.log" 2>&1 || true
 rm -rf .godot/exported
-"$GODOT" --headless --path . --export-release "Android" "$(cygpath -w "$OUT/OpenCiv3.apk")" > "$OUT/export.log" 2>&1
+"$GODOT" --headless --path . --export-release "Android" "$(cygpath -w "$OUT/openciv3android.apk")" > "$OUT/export.log" 2>&1
 
-size=$(stat -c %s "$OUT/OpenCiv3.apk")
+size=$(stat -c %s "$OUT/openciv3android.apk")
 if [ "$size" -lt 50000000 ]; then
 	echo "APK is only $size bytes: the C# build is missing (see $OUT/export.log)." >&2
 	exit 1
 fi
-echo "Built $OUT/OpenCiv3.apk ($size bytes)"
+echo "Built $OUT/openciv3android.apk ($size bytes)"
