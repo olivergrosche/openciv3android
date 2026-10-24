@@ -1,0 +1,4 @@
+out/
+tools/*/bin/
+tools/*/obj/
+scripts/env.local.sh

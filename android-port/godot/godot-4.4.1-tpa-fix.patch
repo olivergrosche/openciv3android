@@ -1,0 +1,14 @@
+--- a/modules/mono/mono_gd/gd_mono.cpp
++++ b/modules/mono/mono_gd/gd_mono.cpp
+@@ -465,7 +465,10 @@
+ 
+ 	String tpa_list = make_tpa_list();
+ 	const char *prop_keys[] = { "TRUSTED_PLATFORM_ASSEMBLIES" };
+-	const char *prop_values[] = { tpa_list.utf8().get_data() };
++	// Keep the UTF-8 copy alive while CoreCLR reads it: the pointer of a temporary was freed before coreclr_initialize,
++	// and Android 17 reuses that memory at once, so the runtime saw no assemblies ("condition corlib not met").
++	CharString tpa_list_utf8 = tpa_list.utf8();
++	const char *prop_values[] = { tpa_list_utf8.get_data() };
+ 	int nprops = sizeof(prop_keys) / sizeof(prop_keys[0]);
+ 
+ 	void *coreclr_handle = nullptr;
