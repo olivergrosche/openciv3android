@@ -150,10 +150,13 @@ public partial class MainMenu : Node {
 		GetTree().ChangeSceneToFile("res://UIElements/NewGame/world_setup.tscn");
 	}
 
-	public void QuickStartGame() {
+	public async void QuickStartGame() {
 		log.Information("start game button pressed");
 		PlayButtonPressedSound();
 		QuickStartSetup.Init(Global);
+		LoadingOverlay.Show(this, L.T("Loading the game …"));
+		await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+		await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
 		GetTree().ChangeSceneToFile("res://C7Game.tscn");
 	}
 
@@ -191,10 +194,7 @@ public partial class MainMenu : Node {
 		if (OS.GetName() == "Android") {
 			// Start where the Civ3 files are copied to, and make the dialog big enough for fingers.
 			SetCiv3HomeDialog.CurrentDir = AndroidBootstrap.SharedStorage + "/Documents";
-			float scale = 1.2f * AndroidBootstrap.TouchUiFactor;
-			Vector2 screen = GetTree().Root.GetVisibleRect().Size - new Vector2(16, 16);
-			SetCiv3HomeDialog.ContentScaleFactor = scale;
-			SetCiv3HomeDialog.Size = new Vector2I((int)Math.Min(357 * scale * 1.6f, screen.X), (int)Math.Min(450 * scale, screen.Y));
+			AndroidBootstrap.FitDialogForTouch(SetCiv3HomeDialog, new Vector2(570, 450));
 		}
 		SetCiv3HomeDialog.PopupCentered();
 	}
@@ -212,6 +212,7 @@ public partial class MainMenu : Node {
 			};
 			if (OS.GetName() == "Android") {
 				notFound.ContentScaleFactor = 1.2f * AndroidBootstrap.TouchUiFactor;
+				AndroidBootstrap.StyleDialogButtons(notFound);
 			}
 			AddChild(notFound);
 			notFound.PopupCentered();

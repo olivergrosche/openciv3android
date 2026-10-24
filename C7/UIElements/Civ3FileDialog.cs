@@ -23,11 +23,7 @@ public partial class Civ3FileDialog : FileDialog {
 		FileSelected += OnFileSelected;
 
 		if (OS.GetName() == "Android") {
-			// Larger for fingers (see AndroidBootstrap.TouchUiFactor), but within the screen.
-			float scale = 1.2f * AndroidBootstrap.TouchUiFactor;
-			Vector2 screen = GetTree().Root.GetVisibleRect().Size - new Vector2(16, 16);
-			ContentScaleFactor = scale;
-			Size = new Vector2I((int)Mathf.Min(Size.X * scale, screen.X), (int)Mathf.Min(Size.Y * scale, screen.Y));
+			AndroidBootstrap.FitDialogForTouch(this, Size);
 		}
 	}
 
@@ -53,10 +49,14 @@ public partial class Civ3FileDialog : FileDialog {
 		return Util.Civ3Root + "/" + relPath;
 	}
 
-	private void OnFileSelected(string path) {
+	// Loading and saving take seconds with big maps: the notice is drawn first (two frames), then the work blocks.
+	private async void OnFileSelected(string path) {
 		if (FileMode == FileDialog.FileModeEnum.OpenFile) {
 			log.Information($"loading {path}");
 			Global.LoadGamePath = path;
+			LoadingOverlay.Show(GetTree().CurrentScene, GoToScenarioSetupAfterLoading ? L.T("Loading the scenario …") : L.T("Loading the game …"));
+			await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+			await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
 			if (GoToScenarioSetupAfterLoading) {
 				GetTree().ChangeSceneToFile("res://UIElements/NewGame/scenario_setup.tscn");
 			} else {
@@ -68,9 +68,13 @@ public partial class Civ3FileDialog : FileDialog {
 			}
 
 			log.Information($"Saving game to {path}");
+			CanvasLayer notice = LoadingOverlay.Show(GetTree().CurrentScene, L.T("Saving the game …"));
+			await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+			await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
 			EngineStorage.ReadGameData((GameData gameData) => {
 				C7GameData.Save.SaveGame.FromGameData(gameData).Save(path);
 			});
+			notice.QueueFree();
 		}
 	}
 }

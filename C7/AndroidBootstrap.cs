@@ -188,6 +188,39 @@ public partial class AndroidBootstrap : Node {
 		}
 	}
 
+	// Dialog windows get larger for fingers, but only as far as their content, laid out for baseSize at scale 1, still
+	// fits on the screen. Before, the window was clipped to the screen while the content kept growing, and on phones
+	// the buttons at the bottom were cut off.
+	public static void FitDialogForTouch(Window dialog, Vector2 baseSize) {
+		Vector2 screen = dialog.GetTree().Root.GetVisibleRect().Size - new Vector2(16, 16);
+		float scale = Mathf.Min(1.2f * TouchUiFactor, Mathf.Min(screen.X / baseSize.X, screen.Y / baseSize.Y));
+		dialog.ContentScaleFactor = scale;
+		dialog.Size = new Vector2I((int)(baseSize.X * scale), (int)(baseSize.Y * scale));
+		StyleDialogButtons(dialog);
+	}
+
+	// The game's theme draws button text dark, for parchment; on the dark dialog windows it was black on dark grey.
+	public static void StyleDialogButtons(Window dialog) {
+		var buttons = new System.Collections.Generic.List<Button>();
+		if (dialog is AcceptDialog accept) {
+			buttons.Add(accept.GetOkButton());
+		}
+		if (dialog is ConfirmationDialog confirm) {
+			buttons.Add(confirm.GetCancelButton());
+		}
+		foreach (Button button in buttons) {
+			foreach (string state in new[] { "font_color", "font_hover_color", "font_pressed_color", "font_focus_color" }) {
+				button.AddThemeColorOverride(state, new Color(0.98f, 0.95f, 0.88f));
+			}
+			foreach ((string state, Color color) in new[] { ("normal", new Color(0.45f, 0.29f, 0.14f)), ("hover", new Color(0.52f, 0.34f, 0.17f)),
+					("pressed", new Color(0.33f, 0.21f, 0.1f)), ("focus", new Color(0.45f, 0.29f, 0.14f)) }) {
+				var style = new StyleBoxFlat { BgColor = color, ContentMarginLeft = 24, ContentMarginRight = 24, ContentMarginTop = 8, ContentMarginBottom = 8 };
+				style.SetCornerRadiusAll(6);
+				button.AddThemeStyleboxOverride(state, style);
+			}
+		}
+	}
+
 	// Civ3 may be copied to Documents/Civ3 or, under any name, into Documents or Download (such as the GOG folder
 	// "Sid Meier's Civilization III Complete"). Returns the first of these folders that has Civ3's art, or null.
 	public static string FindCiv3() {

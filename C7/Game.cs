@@ -203,10 +203,14 @@ public partial class Game : Node {
 
 		advisor.VisibilityChanged += OnAdvisorVisibilityChanged;
 
+		// The game data is built in the background; until then the screen would show an empty map.
+		CanvasLayer loadingNotice = LoadingOverlay.Show(this, L.T("Loading the game …"));
 		try {
 			await InitializeGame();
 			await StartGame();
+			loadingNotice.QueueFree();
 		} catch (Exception ex) {
+			loadingNotice.QueueFree();
 			errorOnLoad = true;
 			string message = ex.Message;
 			string[] stack = ex.StackTrace.Split("\r\n");   //for some reason it is returned with \r\n in the string as one line.  let's make it readable!
