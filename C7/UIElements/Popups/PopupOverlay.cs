@@ -73,6 +73,23 @@ public partial class PopupOverlay : HBoxContainer {
 		OffsetBottom = child.margins.bottom;
 		OffsetLeft = child.margins.left;
 		OffsetRight = child.margins.right;
+		if (OS.GetName() == "Android") {
+			// Larger popups for touch screens. They grow from the edge they are aligned to (right-aligned ones to the
+			// left, centered ones both ways) and downwards from their top margin, so they stay on screen.
+			float pivotX = Alignment switch {
+				AlignmentMode.Begin => 0,
+				AlignmentMode.Center => Size.X / 2,
+				_ => Size.X,
+			};
+			PivotOffset = new Vector2(pivotX, 0);
+			// ... but no taller than the screen below the top margin.
+			float scale = 1.2f * AndroidBootstrap.TouchUiFactor;
+			float height = Math.Max(child.Size.Y, child.GetCombinedMinimumSize().Y);
+			if (height > 0) {
+				scale = Math.Max(1, Math.Min(scale, (GetViewportRect().Size.Y - 8 - OffsetTop) / height));
+			}
+			Scale = Vector2.One * scale;
+		}
 
 		var soundFile = category switch {
 			PopupCategory.Advisor => "popups.advisor",

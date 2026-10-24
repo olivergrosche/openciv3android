@@ -287,8 +287,18 @@ public partial class CityScreen : Control {
 		});
 	}
 
+	// The city's tiles fill the window in the middle of the screen only at zoom 1, but the map may have been zoomed
+	// (mouse wheel, pinching, the closer start on phones). The map view is restored when the screen closes.
+	private float? zoomBeforeCityScreen;
+	private Vector2 cameraBeforeCityScreen;
+
 	private void OnShowCityScreenLocked(GameData gameData, ParameterWrapper<City> city) {
 		this.Show();
+		if (zoomBeforeCityScreen == null) {
+			zoomBeforeCityScreen = mapView.cameraZoom;
+			cameraBeforeCityScreen = mapView.cameraLocation;
+		}
+		mapView.setCameraZoom(1, Vector2.Zero);
 		mapView.centerCameraOnTile(city.Value.location.neighbors[TileDirection.SOUTH]);
 		tileAssignmentLayer.city = city.Value;
 		cityName.Text = city.Value.name;
@@ -305,6 +315,11 @@ public partial class CityScreen : Control {
 	private void OnExit() {
 		productionMenu.Hide();
 		tileAssignmentLayer.city = null;
+		if (zoomBeforeCityScreen is float zoom) {
+			mapView.setCameraZoom(zoom, Vector2.Zero);
+			mapView.cameraLocation = cameraBeforeCityScreen;
+			zoomBeforeCityScreen = null;
+		}
 	}
 
 	private void RenderStrategicResources(GameData gameData, City city) {
@@ -388,11 +403,11 @@ public partial class CityScreen : Control {
 			growthStr = "Starving!";
 			foodLostPerTurn = Math.Abs(city.FoodGrowthPerTurn());
 		} else {
-			growthStr = $"Growth in {turnsUntilGrowth} turns.";
+			growthStr = L.F("Growth in {0} turns.", turnsUntilGrowth);
 			foodSurplus = city.FoodGrowthPerTurn();
 		}
 		growthInLabel.Text = growthStr;
-		foodLabel.Text = $"{city.CurrentFoodYield()} per turn";
+		foodLabel.Text = L.F("{0} per turn", city.CurrentFoodYield());
 
 		RenderFoodBox(city.FoodNeededToGrow(), city.foodStored, foodLostPerTurn, hasGranary: city.HasGranary());
 		RenderFoodRow(city.FoodConsumedPerTurn(), foodSurplus);
@@ -578,17 +593,17 @@ public partial class CityScreen : Control {
 
 	private void RenderCommerceDetails(City city) {
 		CommerceBreakdown breakdown = city.CurrentCommerceYield();
-		commerceTaxesDetails.Text = $"{breakdown.taxes} gold/turn to taxes";
-		commerceScienceDetails.Text = $"{breakdown.beakers} gold/turn to science  ({breakdown.corrupted} corrupt)";
-		commerceHappinessDetails.Text = $"{breakdown.happiness} gold/turn to happiness";
+		commerceTaxesDetails.Text = L.F("{0} gold/turn to taxes", breakdown.taxes);
+		commerceScienceDetails.Text = L.F("{0} gold/turn to science  ({1} corrupt)", breakdown.beakers, breakdown.corrupted);
+		commerceHappinessDetails.Text = L.F("{0} gold/turn to happiness", breakdown.happiness);
 	}
 
 	private void RenderProductionDetails(GameData gameData, City city) {
 		CorruptableValue shields = city.CurrentProductionYield();
 		RenderShieldBox(city.owner.ShieldCost(city.itemBeingProduced), city.shieldsStored);
 		RenderShieldRow(shields.useful, shields.corrupt);
-		productionLabel.Text = $"PRODUCTION: {shields.useful + shields.corrupt} per turn";
-		completeInLabel.Text = city.TurnsUntilProductionFinished() == int.MaxValue ? "--" : $"Complete in {city.TurnsUntilProductionFinished()} turns";
+		productionLabel.Text = L.F("PRODUCTION: {0} per turn", shields.useful + shields.corrupt);
+		completeInLabel.Text = city.TurnsUntilProductionFinished() == int.MaxValue ? "--" : L.F("Complete in {0} turns", city.TurnsUntilProductionFinished());
 
 		foreach (Node child in productionButton.GetChildren()) {
 			child.QueueFree();
@@ -629,7 +644,7 @@ public partial class CityScreen : Control {
 		Label productionButtonLabel = new();
 		productionButton.AddChild(productionButtonLabel);
 		productionButtonLabel.SetPosition(new Vector2(0, 65));
-		productionButtonLabel.SetTextAndCenterLabel($"{city.itemBeingProduced.name}");
+		productionButtonLabel.SetTextAndCenterLabel(L.T(city.itemBeingProduced.name));
 
 		productionMenu.AddItems(gameData, city, (IProducible p) => {
 			EngineStorage.ReadGameData((GameData gameData) => {
@@ -702,10 +717,10 @@ public partial class CityScreen : Control {
 	}
 
 	private void RenderCulture(City city) {
-		culturePerTurn.Text = $"{city.GetCulturePerTurn()}/turn";
+		culturePerTurn.Text = L.F("{0}/turn", city.GetCulturePerTurn());
 
 		int nextCultureExpansion = (int)Math.Pow(10, city.GetBorderExpansionLevel());
-		totalCulture.Text = $"Total: {city.GetCulture()}/{nextCultureExpansion}";
+		totalCulture.Text = L.F("Total: {0}/{1}", city.GetCulture(), nextCultureExpansion);
 	}
 
 	private void RenderPopHeads(City city) {

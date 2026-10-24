@@ -112,11 +112,11 @@ public partial class InteractablePopUpController : Control {
 			this.advisorTextureRect.Texture = advisorHead.Texture;
 		}
 
-		this.headerLabel.Text = value.header;
+		this.headerLabel.Text = L.T(value.header);
 
 		this.mainTextContainer.Visible = true;
 		this.mainTextLabel.Visible = true;
-		this.mainTextLabel.Text = value.message;
+		this.mainTextLabel.Text = L.T(value.message);
 
 		if (string.IsNullOrEmpty(this.mainTextLabel.Text)) {
 			this.mainTextContainer.Visible = false;
@@ -133,7 +133,7 @@ public partial class InteractablePopUpController : Control {
 			this.lineEditLabel.Visible = true;
 			this.lineEdit.Visible = true;
 
-			this.lineEditLabel.Text = value.lineEditComponent.label;
+			this.lineEditLabel.Text = L.T(value.lineEditComponent.label);
 			this.lineEdit.Text = value.lineEditComponent.placeholderText;
 			this.lineEdit.SelectAll();
 			this.lineEdit.GrabFocus();
@@ -172,10 +172,25 @@ public partial class InteractablePopUpController : Control {
 		this.mainContainer.OffsetLeft += value.margins.left;
 		this.mainContainer.OffsetRight += value.margins.right;
 
+		if (OS.GetName() == "Android") {
+			// Larger for fingers, like PopupOverlay.ShowPopup; it grows away from the screen edge it is anchored to.
+			this.mainContainer.Scale = Vector2.One * 1.2f * AndroidBootstrap.TouchUiFactor;
+		}
+
 		this.Show();
 
 		// wait for the UI layout to settle
 		await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+
+		Vector2 pivot = new((this.mainContainer.AnchorLeft + this.mainContainer.AnchorRight) / 2,
+			(this.mainContainer.AnchorTop + this.mainContainer.AnchorBottom) / 2);
+		this.mainContainer.PivotOffset = this.mainContainer.Size * pivot;
+		if (OS.GetName() == "Android" && pivot.Y < 1 && this.mainContainer.Size.Y > 0) {
+			// Never let the enlarged popup run off the bottom of the screen (a phone is as few units high as the PC).
+			float room = GetViewportRect().Size.Y - 8 - this.mainContainer.Position.Y - pivot.Y * this.mainContainer.Size.Y;
+			float fit = room / ((1 - pivot.Y) * this.mainContainer.Size.Y);
+			this.mainContainer.Scale = Vector2.One * Math.Max(1, Math.Min(this.mainContainer.Scale.X, fit));
+		}
 
 		// this should always be done at the very end, so the height is correct based on the dynamic elements
 		this.bgTextureRect.Texture = this.CreateTextureBackGround((int)this.mainBgContainer.GetSize().X, (int)this.mainBgContainer.GetSize().Y);
@@ -183,7 +198,7 @@ public partial class InteractablePopUpController : Control {
 
 	protected BaseButton AddOptionButton(Node parent, string label, bool pressed, Action action, ButtonGroup buttonGroup = null) {
 		Civ3MenuButton button = new() {
-			Text = label,
+			Text = L.T(label),
 			FontSize = 14,
 			ButtonGroup = buttonGroup,
 			ButtonPressed = pressed,
@@ -195,6 +210,10 @@ public partial class InteractablePopUpController : Control {
 			this.lastPressedButton = button;
 
 		button.Pressed += () => {
+			if (OS.GetName() == "Android") {
+				// One tap chooses: on a touch screen the first tap would only highlight the option.
+				this.lastPressedButton = button;
+			}
 			Toggle(button, action);
 		};
 

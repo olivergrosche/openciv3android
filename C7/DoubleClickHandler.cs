@@ -18,7 +18,8 @@ using Godot;
 public partial class DoubleClickHandler : Node {
 	int leftMouseButtonClickCount = 0;
 	InputEventMouseButton lastEventMouseButton;
-	const double DOUBLE_CLICK_DELAY = 0.2;
+	// On touch screens Game passes taps when the finger lifts, and a double tap is slower than a double click.
+	static readonly double DOUBLE_CLICK_DELAY = OS.GetName() == "Android" ? 0.4 : 0.2;
 
 	Timer timer = new();
 
@@ -43,6 +44,12 @@ public partial class DoubleClickHandler : Node {
 		} else {
 			timer.Start(DOUBLE_CLICK_DELAY);
 		}
+	}
+
+	// Drops a click that is still waiting for a possible second click.
+	public void Cancel() {
+		timer.Stop();
+		leftMouseButtonClickCount = 0;
 	}
 
 	private void OnTimeout() {

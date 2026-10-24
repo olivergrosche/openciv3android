@@ -25,6 +25,10 @@ public partial class RightClickMenu : VBoxContainer {
 		theme.SetStylebox("hover", "Button", GetItemStyleBox(Color.Color8(255, 189, 107, 255)));
 		theme.SetStylebox("pressed", "Button", GetItemStyleBox(Color.Color8(140, 200, 200, 255)));
 		this.Theme = theme;
+		if (OS.GetName() == "Android") {
+			// Larger entries for fingers.
+			this.Scale = Vector2.One * 1.2f * AndroidBootstrap.TouchUiFactor;
+		}
 
 		this.Hide();
 
@@ -38,7 +42,8 @@ public partial class RightClickMenu : VBoxContainer {
 		this.Show();
 
 		// Move "position" if the menu would extend past the right or bottom edges of the screen
-		Vector2 offScreen = position + this.Size - DisplayServer.WindowGetSize();
+		// Compare in viewport coordinates: with a stretched viewport (Android) the window size is in physical pixels.
+		Vector2 offScreen = position + this.Size * this.Scale - GetViewportRect().Size;
 		if (offScreen.X > 0) {
 			position.X = Mathf.Max(0, position.X - offScreen.X);
 		}
@@ -196,7 +201,7 @@ public partial class RightClickTileMenu : RightClickMenu {
 			bool isFortified = isUnitFortified(unit, uiUpdatedUnitStates);
 			fortifiedCount += isFortified ? 1 : 0;
 			string actionName = getUnitAction(unit, isFortified);
-			var menuItem = AddItem($"{actionName} {unit.Describe()}", () => SelectUnit(unit.id));
+			var menuItem = AddItem($"{L.T(actionName)} {L.Describe(unit)}", () => SelectUnit(unit.id));
 
 			if (isUnitLoadedOnTransport(unit))
 				ApplyAltItemOverrides(menuItem);
@@ -204,14 +209,14 @@ public partial class RightClickTileMenu : RightClickMenu {
 		int unfortifiedCount = playerUnits.Count - fortifiedCount;
 
 		if (fortifiedCount > 1) {
-			AddItem($"Wake All ({fortifiedCount} units)", () => ForAll(tile.XCoordinate, tile.YCoordinate, false));
+			AddItem(L.F("Wake All ({0} units)", fortifiedCount), () => ForAll(tile.XCoordinate, tile.YCoordinate, false));
 		}
 		if (unfortifiedCount > 1) {
-			AddItem($"Fortify All ({unfortifiedCount} units)", () => ForAll(tile.XCoordinate, tile.YCoordinate, true));
+			AddItem(L.F("Fortify All ({0} units)", unfortifiedCount), () => ForAll(tile.XCoordinate, tile.YCoordinate, true));
 		}
 		if (tile.cityAtTile?.owner == game.controller) {
 			AddTreeSeparator();
-			AddItem($"Zoom to {tile.cityAtTile.name}", () => {
+			AddItem(L.F("Zoom to {0}", L.T(tile.cityAtTile.name)), () => {
 				this.CloseAndDelete();
 				EngineStorage.ReadGameData((GameData gameData) => {
 					game.ShowCityScreenForCity(gameData, tile.cityAtTile);
@@ -262,17 +267,17 @@ public partial class RightClickTileMenu : RightClickMenu {
 
 			if (tile.cityAtTile == null) {
 				foreach (MapUnit unit in nonPlayerUnits) {
-					AddItem($"{unit.owner.civilization.noun} {unit.Describe()}", null);
+					AddItem($"{L.T(unit.owner.civilization.noun)} {L.Describe(unit)}", null);
 				}
 			} else {
 				// TODO: This isn't necessarily the top unit, get that code to an accessible
 				// location and then use it here.
 				MapUnit unit = nonPlayerUnits[0];
-				AddItem($"{unit.owner.civilization.noun} {unit.Describe()}", null);
+				AddItem($"{L.T(unit.owner.civilization.noun)} {L.Describe(unit)}", null);
 			}
 
 			if (!nonPlayerUnits[0].owner.isBarbarians)
-				AddItem($"Contact {nonPlayerUnits[0].owner.civilization.name}", contactCiv);
+				AddItem(L.F("Contact {0}", L.T(nonPlayerUnits[0].owner.civilization.name)), contactCiv);
 		}
 	}
 
@@ -349,7 +354,7 @@ public partial class RightClickCityMenu : RightClickMenu {
 		AddTreeSeparator();
 
 		if (tile.cityAtTile?.owner == game.controller) {
-			AddItem($"Zoom to {tile.cityAtTile.name}", () => {
+			AddItem(L.F("Zoom to {0}", L.T(tile.cityAtTile.name)), () => {
 				this.CloseAndDelete();
 				EngineStorage.ReadGameData((GameData gameData) => {
 					game.ShowCityScreenForCity(gameData, tile.cityAtTile);
@@ -400,7 +405,7 @@ public partial class RightClickChooseProductionMenu : RightClickMenu {
 		EngineStorage.ReadGameData((GameData gameData) => {
 			foreach (IProducible option in city.ListProductionOptions(gameData)) {
 				int buildTime = city.TurnsToProduce(option);
-				AddItem($"{option.name} ({buildTime} turns)", () => ChooseProduction(option.name), GetProducibleIcon(option, city.owner));
+				AddItem(L.F("{0} ({1} turns)", L.T(option.name), buildTime), () => ChooseProduction(option.name), GetProducibleIcon(option, city.owner));
 			}
 		});
 	}

@@ -17,19 +17,30 @@ config/features=PackedStringArray("4.4", "C#")
 boot_splash/fullsize=false
 boot_splash/image="uid://ovwv08a53d7k"
 config/icon="res://icon.png"
+config/quit_on_go_back=false
 
 [autoload]
 
+AndroidBootstrap="*res://AndroidBootstrap.cs"
 GlobalSingleton="*res://GlobalSingleton.cs"
 LogManager="*res://LogManager.cs"
 GlobalAudioManager="*res://Audio/AudioManager.tscn"
 
 [display]
 
+window/size/viewport_width.android=1024
+window/size/viewport_height.android=768
+window/stretch/mode.android="canvas_items"
+window/stretch/aspect.android="expand"
+window/handheld/orientation=4
 window/size/window_width_override=1152
 window/size/window_height_override=768
 window/dpi/allow_hidpi=false
 window/per_pixel_transparency/allowed=true
+
+[input_devices]
+
+pointing/android/enable_pan_and_scale_gestures=true
 
 [dotnet]
 
@@ -288,12 +299,17 @@ show_demographics_view={
 
 project/assembly_name="C7"
 
+[internationalization]
+
+locale/translations=PackedStringArray("res://Translations/ui.de.translation", "res://Translations/names.de.translation")
+
 [network]
 
 limits/debugger_stdout/max_chars_per_second=65535
 
 [rendering]
 
+renderer/rendering_method.mobile="gl_compatibility"
 textures/canvas_textures/default_texture_filter=0
 textures/vram_compression/import_etc2_astc=true
 environment/defaults/default_clear_color=Color(0, 0, 0, 1)

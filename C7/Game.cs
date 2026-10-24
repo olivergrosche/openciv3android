@@ -110,6 +110,27 @@ public partial class Game : Node {
 	private bool IsMovingCamera;
 	private Vector2 OldPosition;
 
+	// Touch screens (Android): a press on one of the player's units that can still move holds the unit instead of the
+	// camera. Once the finger moves, the unit is selected and dragged: the goto path follows the finger and releasing
+	// moves the unit there, like Civ3's drag-to-move. Taps are handled when the finger lifts, so a press that turns
+	// into a drag or a long press does not also select a unit.
+	private static readonly bool TouchControls = OS.GetName() == "Android";
+	private const float DragThreshold = 12;
+	private bool IsDraggingUnit;
+	private bool DraggedOffStart;
+	private InputEventMouseButton DragPress;
+	private MapUnit DragUnit;
+	private InputEventMouseButton DragTap; // DragPress moved to the center of the unit's tile
+	private ulong DragPressTime;
+
+	// Long press = right click, done here instead of by Godot: Godot's version cancels the left press after half a
+	// second, which broke dragging a unit when the finger rested before moving. It only applies to presses that do not
+	// hold a unit; a long press on a unit opens the menu on release (EndUnitDrag).
+	private const ulong LongPressMsec = 600;
+	private bool LongPressArmed;
+	private ulong LongPressStart;
+	private Vector2 LongPressPosition;
+
 	[Export]
 	private PopupOverlay popupOverlay;
 	[Export]
@@ -216,6 +237,10 @@ public partial class Game : Node {
 		}
 
 		InitializeMapView();
+		if (TouchControls) {
+			EnlargeHudForTouch();
+			UseAdvisorMenuForTouch();
+		}
 		InitializeAudio();
 	}
 
@@ -444,7 +469,7 @@ public partial class Game : Node {
 				break;
 			case MsgShowTemporaryPopup mSTP:
 				Vector2 pos = mapView.screenLocationOfTile(mSTP.location, true);
-				TemporaryPopup.Show(this, mSTP.message, pos);
+				TemporaryPopup.Show(this, L.T(mSTP.message), pos);
 				break;
 			case MsgUnitMoved mUUAAB:
 				EmitSignal(SignalName.UnitMoved, new ParameterWrapper<MapUnit>(mUUAAB.Unit));
@@ -481,6 +506,14 @@ public partial class Game : Node {
 
 	public override void _Process(double delta) {
 		ProcessActions();
+
+		if (LongPressArmed && Time.GetTicksMsec() - LongPressStart >= LongPressMsec) {
+			LongPressArmed = false;
+			IsMovingCamera = false;
+			if (!StartDragFromNeighbour(LongPressPosition)) {
+				HandleRightMouseButton(new InputEventMouseButton { ButtonIndex = MouseButton.Right, Position = LongPressPosition });
+			}
+		}
 
 		if (!EngineStorage.HasPendingAnimations())
 			EngineStorage.ProcessNextMessageToEngine();
@@ -659,6 +692,8 @@ public partial class Game : Node {
 		// Don't handle if there's an open modal, or if it's the AI's turn
 		if ((HasVisibleModal() && !IsModalSwitchEvent(@event)) || CurrentState == GameState.ComputerTurn) {
 			IsMovingCamera = false;
+			IsDraggingUnit = false;
+			LongPressArmed = false;
 			return;
 		}
 
@@ -697,6 +732,10 @@ public partial class Game : Node {
 
 	private void HandleLeftMouseButton(InputEventMouseButton eventMouseButton) {
 		GetViewport().SetInputAsHandled();
+		if (TouchControls) {
+			HandleTouch(eventMouseButton);
+			return;
+		}
 		Control uiHover = GetViewport().GuiGetHoveredControl();
 		// Can't drag the map when the mouse is over a ui element
 		if (eventMouseButton.IsPressed() && uiHover is not TextureButton) {
@@ -710,6 +749,185 @@ public partial class Game : Node {
 			}
 		} else {
 			IsMovingCamera = false;
+		}
+	}
+
+	// A press on a unit holds it (StartUnitDrag); any other press moves the camera and arms the long press. A press
+	// that ends before the long press without having moved is a tap.
+	private void HandleTouch(InputEventMouseButton eventMouseButton) {
+		if (eventMouseButton.IsPressed()) {
+			OldPosition = eventMouseButton.Position;
+			if (gotoInfo == null && bombardInfo == null && StartUnitDrag(eventMouseButton)) {
+				return;
+			}
+			IsMovingCamera = true;
+			LongPressArmed = true;
+			LongPressStart = Time.GetTicksMsec();
+			LongPressPosition = eventMouseButton.Position;
+			return;
+		}
+
+		IsMovingCamera = false;
+		if (IsDraggingUnit) {
+			EndUnitDrag(eventMouseButton);
+		} else if (LongPressArmed) {
+			LongPressArmed = false;
+			HandleTap(eventMouseButton);
+		}
+	}
+
+	private void HandleTap(InputEventMouseButton tap) {
+		if (CanDoubleClick(tap)) {
+			doubleClickHandler.Accept(tap);
+		} else {
+			OnSingleLeftMouseButtonClick(tap);
+		}
+	}
+
+	private bool StartUnitDrag(InputEventMouseButton press) {
+		(MapUnit unit, Vector2 tileCenter) = DraggableUnitAt(press.Position);
+		if (unit == null) {
+			return false;
+		}
+
+		IsDraggingUnit = true;
+		DraggedOffStart = false;
+		DragUnit = unit;
+		DragPress = press;
+		DragTap = new InputEventMouseButton { ButtonIndex = MouseButton.Left, Position = tileCenter, Pressed = true };
+		DragPressTime = Time.GetTicksMsec();
+		return true;
+	}
+
+	// Unit sprites stand on their tile's center and reach about one tile height up into the tile to the north, so a
+	// finger on a unit's body is often over another tile. Check the tile under the finger and the ones just below it,
+	// and accept a unit if the finger is inside its tile diamond or its figure. The selected unit wins. Returns the
+	// unit and the screen position of its tile's center.
+	private (MapUnit, Vector2) DraggableUnitAt(Vector2 position) {
+		float zoom = mapView.cameraZoom;
+		float halfWidth = Mathf.Max(45 * zoom, 30), above = Mathf.Max(90 * zoom, 50), below = Mathf.Max(32 * zoom, 25);
+		MapUnit found = null;
+		Vector2 foundCenter = position;
+		EngineStorage.ReadGameData((GameData gameData) => {
+			for (int step = 0; step <= 3 && found != CurrentlySelectedUnit; step++) {
+				(int x, int y) = mapView.tileCoordsInMainCamera(position + new Vector2(0, step * 32 * zoom));
+				Tile tile = gameData.map.tileAt(x, y);
+				if (tile == null) {
+					continue;
+				}
+				Vector2 center = mapView.screenLocationOfTileCoords(x, y);
+				Vector2 offset = position - center;
+				if (Mathf.Abs(offset.X) > halfWidth || offset.Y < -above || offset.Y > below) {
+					continue;
+				}
+				MapUnit unit = TouchUnitOn(tile, false);
+				if (unit == null || !unit.movementPoints.canMove) {
+					continue;
+				}
+				if (found == null || unit == CurrentlySelectedUnit) {
+					found = unit;
+					foundCenter = center;
+				}
+			}
+		});
+		return (found, foundCenter);
+	}
+
+	// The unit a touch on this tile means: the selected unit, else the first of the player's units that can move and
+	// is not fortified, so that a drag across a garrisoned city moves the camera. With anyUnit (taps) it falls back
+	// to any of the player's units, as a click does.
+	private MapUnit TouchUnitOn(Tile tile, bool anyUnit) {
+		if (tile.unitsOnTile.Contains(CurrentlySelectedUnit)) {
+			return CurrentlySelectedUnit;
+		}
+		return tile.unitsOnTile.FirstOrDefault(u => u.owner == controller && u.movementPoints.canMove && !u.isFortified)
+			?? (anyUnit ? tile.unitsOnTile.FirstOrDefault(u => u.owner == controller) : null);
+	}
+
+	// Civ3's HUD art is made for a 1024x768 screen; on a tablet or phone the tool bar and the info box get larger (the
+	// popups too, see PopupOverlay.ShowPopup). The full-screen views (city screen, advisors) are 1024x768 and already
+	// fill the screen height.
+	private void EnlargeHudForTouch() {
+		float hudScale = 1.4f * AndroidBootstrap.TouchUiFactor;
+		Control status = GetNode<Control>("CanvasLayer/Control/GameStatus");
+		status.PivotOffset = status.Size;
+		status.Scale = new Vector2(hudScale, hudScale);
+		GetNode<Control>("CanvasLayer/Control/ToolBar").Scale = new Vector2(hudScale, hudScale);
+		if (AndroidBootstrap.TouchUiFactor > 1) {
+			// The map starts closer on phones too (pinch to zoom out).
+			mapView.setCameraZoomFromMiddle(mapView.cameraZoom * AndroidBootstrap.TouchUiFactor);
+		}
+	}
+
+	// The advisors and the other status screens open with F1-F11, which a tablet does not have. On a touch screen the
+	// advisor button lists them all, like the advisor menu in Civ3, instead of reopening the last advisor.
+	private static readonly (string name, string action, bool isAdvisor)[] AdvisorMenu = [
+		("Domestic Advisor", C7Action.ShowDomesticAdvisor, true),
+		("Trade Advisor", C7Action.ShowTradeAdvisor, true),
+		("Military Advisor", C7Action.ShowMilitaryAdvisor, true),
+		("Foreign Advisor", C7Action.ShowForeignAdvisor, true),
+		("Cultural Advisor", C7Action.ShowCulturalAdvisor, true),
+		("Science Advisor", C7Action.ShowScienceAdvisor, true),
+		("Wonders of the World", C7Action.ShowWondersView, false),
+		("Victory Status", C7Action.ShowVictoryStatusView, false),
+		("Palace", C7Action.ShowPalaceView, false),
+		("Space Race", C7Action.ShowSpaceRaceView, false),
+		("Demographics", C7Action.ShowDemographicsView, false),
+	];
+
+	private void UseAdvisorMenuForTouch() {
+		TextureButton advisorButton = GetNode<TextureButton>("CanvasLayer/Control/ToolBar/MarginContainer/HBoxContainer/AdvisorButton");
+		Callable showLatest = new(advisor, "ShowLatestAdvisor");
+		if (advisorButton.IsConnected(BaseButton.SignalName.Pressed, showLatest)) {
+			advisorButton.Disconnect(BaseButton.SignalName.Pressed, showLatest);
+		}
+		advisorButton.Pressed += ShowAdvisorMenu;
+	}
+
+	private void ShowAdvisorMenu() {
+		List<ButtonAction> options = AdvisorMenu.Select(entry => new ButtonAction() {
+			message = entry.name,
+			action = () => EmitSignal(entry.isAdvisor ? SignalName.ShowSpecificAdvisor : SignalName.ShowGameView, entry.action),
+		}).ToList();
+		EmitSignal(SignalName.InteractivePopUp, new ParameterWrapper<InteractablePopUp>(
+			new OptionsPopUp(controller.id, "Advisors", null, options, AdvisorHead.Advisor.None, AdvisorHead.Mood.None,
+				hSize: 350, margins: new Margins(top: 60))));
+	}
+
+	// A long press on a tile next to the selected unit picks the unit up as if it had been dragged there (as in the
+	// Civ3 touch versions): releasing moves or attacks, moving the finger on changes the destination.
+	private bool StartDragFromNeighbour(Vector2 position) {
+		MapUnit unit = CurrentlySelectedUnit;
+		if (gotoInfo != null || bombardInfo != null || unit == null || unit == MapUnit.NONE || unit.owner != controller || !unit.movementPoints.canMove) {
+			return false;
+		}
+		Tile tile = PositionToTile(position);
+		if (tile == null || unit.location.DistanceTo(tile) != 1) {
+			return false;
+		}
+
+		IsDraggingUnit = true;
+		DraggedOffStart = true;
+		DragUnit = unit;
+		DragPress = new InputEventMouseButton { ButtonIndex = MouseButton.Left, Position = position, Pressed = true };
+		doubleClickHandler.Cancel();
+		gotoInfo = GetGotoInfo(position);
+		Input.VibrateHandheld(40);
+		return true;
+	}
+
+	private void EndUnitDrag(InputEventMouseButton release) {
+		IsDraggingUnit = false;
+		if (DraggedOffStart) {
+			this.ResolveMovement(GetGotoInfo(release.Position));
+			this.SetGotoMode(false);
+		} else if (Time.GetTicksMsec() - DragPressTime >= LongPressMsec) {
+			// Held without moving: the tile menu, which for a city also has "Zoom to city" and production. It opens
+			// on release, so a finger that rests before dragging still drags.
+			HandleRightMouseButton(DragTap);
+		} else {
+			// A tap selects the unit; a double tap on one of the player's cities opens the city screen.
+			HandleTap(DragTap);
 		}
 	}
 
@@ -729,6 +947,8 @@ public partial class Game : Node {
 
 	private void OnSingleLeftMouseButtonClick(InputEventMouseButton eventMouseButton) {
 		if (gotoInfo != null) {
+			// Touch screens have no hover motion that would have updated the target, so take it from the click itself.
+			gotoInfo = GetGotoInfo(eventMouseButton.Position);
 			this.ResolveMovement(gotoInfo);
 			this.SetGotoMode(false);
 		} else if (bombardInfo != null) {
@@ -760,7 +980,7 @@ public partial class Game : Node {
 		}
 
 		// TODO: This should really be the top unit.
-		MapUnit unit = tile.unitsOnTile.FirstOrDefault();
+		MapUnit unit = TouchControls ? TouchUnitOn(tile, true) : tile.unitsOnTile.FirstOrDefault();
 		if (unit == null || unit.owner != controller) {
 			return;
 		}
@@ -863,8 +1083,24 @@ public partial class Game : Node {
 	}
 
 	private void HandleMouseMotionInput(InputEventMouseMotion eventMouseMotion) {
-		if (IsMovingCamera) {
+		if (IsDraggingUnit) {
 			GetViewport().SetInputAsHandled();
+			if (!DraggedOffStart && eventMouseMotion.Position.DistanceTo(DragPress.Position) > DragThreshold) {
+				DraggedOffStart = true;
+				// A tap just before must not select another unit while this one is dragged.
+				doubleClickHandler.Cancel();
+				if (DragUnit != CurrentlySelectedUnit) {
+					unitSelector.SetSelectedUnit(DragUnit);
+				}
+			}
+			if (DraggedOffStart) {
+				gotoInfo = GetGotoInfo(eventMouseMotion.Position);
+			}
+		} else if (IsMovingCamera) {
+			GetViewport().SetInputAsHandled();
+			if (eventMouseMotion.Position.DistanceTo(LongPressPosition) > DragThreshold) {
+				LongPressArmed = false;
+			}
 			mapView.cameraLocation += OldPosition - eventMouseMotion.Position;
 			OldPosition = eventMouseMotion.Position;
 		} else if (gotoInfo != null) {
@@ -1008,6 +1244,13 @@ public partial class Game : Node {
 		double newScale = mapView.cameraZoom * magnifyGesture.Factor;
 
 		mapView.setCameraZoom((float)newScale, magnifyGesture.Position);
+		GetViewport().SetInputAsHandled();
+	}
+
+	// Whether a screen or popup covers the map, so that pinching magnifies the screen (AndroidBootstrap) instead of
+	// zooming the map.
+	public bool ShowsScreenOverMap() {
+		return HasVisibleModal() || interactablePopUpController.Visible;
 	}
 
 	private void ProcessActions() {

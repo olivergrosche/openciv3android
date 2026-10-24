@@ -21,6 +21,14 @@ public partial class Civ3FileDialog : FileDialog {
 
 		Global = GetNode<GlobalSingleton>("/root/GlobalSingleton");
 		FileSelected += OnFileSelected;
+
+		if (OS.GetName() == "Android") {
+			// Larger for fingers (see AndroidBootstrap.TouchUiFactor), but within the screen.
+			float scale = 1.2f * AndroidBootstrap.TouchUiFactor;
+			Vector2 screen = GetTree().Root.GetVisibleRect().Size - new Vector2(16, 16);
+			ContentScaleFactor = scale;
+			Size = new Vector2I((int)Mathf.Min(Size.X * scale, screen.X), (int)Mathf.Min(Size.Y * scale, screen.Y));
+		}
 	}
 
 	public void SetDirectoryForLoading(string RelPath) {

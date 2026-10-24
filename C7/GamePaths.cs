@@ -6,12 +6,15 @@ public static class GamePaths {
 	// Base directory for finding data files (Lua/, Text/, Assets/).
 	// In the editor this is "res://". In exports, it's the directory
 	// containing the executable — on macOS, navigated out of the .app bundle.
+	// On Android there is none: the data folder set up by AndroidBootstrap.
 	private static string _baseDir;
 	public static string BaseDir {
 		get {
 			if (_baseDir == null) {
 				if (OS.HasFeature("editor")) {
 					_baseDir = "";
+				} else if (OS.GetName() == "Android") {
+					_baseDir = AndroidBootstrap.DataDir + "/";
 				} else {
 					string exeDir = OS.GetExecutablePath().GetBaseDir();
 					// On macOS the exe is inside *.app/Contents/MacOS/;

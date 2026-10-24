@@ -47,6 +47,24 @@ public partial class MainMenu : Node {
 		} catch (Exception ex) {
 			log.Error(ex, "Could not set up the main menu");
 		}
+
+		if (OS.GetName() == "Android") {
+			EnlargeMenuForTouch();
+		}
+	}
+
+	// The menu buttons are sized for a mouse. On a tablet they get 1.6x larger, on a phone (AndroidBootstrap.TouchUiFactor)
+	// as large as fits between the title and the copyright lines, growing from the menu's top left corner.
+	private async void EnlargeMenuForTouch() {
+		Control menu = GetNode<Control>("Control/Background/PanelContainer");
+		Control footer = GetNode<Control>("Control/Background/RichTextLabel2");
+		await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+		float scale = 1.6f * AndroidBootstrap.TouchUiFactor;
+		float room = footer.GlobalPosition.Y - 8 - menu.GlobalPosition.Y;
+		if (menu.Size.Y > 0) {
+			scale = Math.Max(1, Math.Min(scale, room / menu.Size.Y));
+		}
+		menu.Scale = new Vector2(scale, scale);
 	}
 
 	private void DisplayTitleScreen() {

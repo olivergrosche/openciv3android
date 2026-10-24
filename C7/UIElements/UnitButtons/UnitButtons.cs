@@ -22,6 +22,8 @@ public partial class UnitButtons : VBoxContainer {
 
 	private Dictionary<string, ButtonAndTooltip> buttonMap = new();
 
+	private const float TouchButtonSize = 50;
+
 	[Export]
 	HBoxContainer primaryControls;
 
@@ -92,6 +94,12 @@ public partial class UnitButtons : VBoxContainer {
 		TextureButton button = new();
 		button.Hide();
 		TextureLoader.SetButtonTextures(button, "ui.unit_control." + action);
+		if (OS.GetName() == "Android") {
+			// Civ3's 32x32 command buttons are too small for fingers; scale the art up.
+			button.IgnoreTextureSize = true;
+			button.StretchMode = TextureButton.StretchModeEnum.KeepAspectCentered;
+			button.CustomMinimumSize = Vector2.One * TouchButtonSize * AndroidBootstrap.TouchUiFactor;
+		}
 		button.Pressed += () => {
 			EmitSignal(SignalName.ActionRequested, action);
 			button.ReleaseFocus();
@@ -153,7 +161,7 @@ public partial class UnitButtons : VBoxContainer {
 			string actionKey = terraform.UIAction;
 			if (buttonMap.TryGetValue(actionKey, out ButtonAndTooltip value)) {
 				value.button.Visible = true;
-				value.button.TooltipText = $"{value.baseTooltip} ({unit.TurnsToCompleteTerraform(terraform)} turns)";
+				value.button.TooltipText = L.F("{0} ({1} turns)", L.T(value.baseTooltip), unit.TurnsToCompleteTerraform(terraform));
 			} else {
 				log.Warning("Could not find button " + actionKey);
 			}
