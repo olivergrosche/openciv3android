@@ -610,6 +610,11 @@ namespace C7GameData {
 				if (knownTechs.Contains(tech.id)) {
 					continue;
 				}
+				// Techs without an era (imported as "Hidden") are not part of the tech tree. Scenarios use them as an
+				// unreachable prerequisite to switch buildings and units off, like the "Trashcan" tech of Giant Earth.
+				if (tech.EraCivilopediaName == "Hidden") {
+					continue;
+				}
 				if (GetEraIndex(tech.EraCivilopediaName) > EraIndex()) {
 					continue;
 				}
@@ -1201,8 +1206,10 @@ namespace C7GameData {
 		}
 
 		public bool HasRequiredTechnology(IProducible producible) {
+			// A tech without an era switches the producible off (see GetAvailableTechsToResearch), even in games where
+			// an earlier version let a player research it.
 			return producible.requiredTech == null ||
-				   knownTechs.Contains(producible.requiredTech.id);
+				   (knownTechs.Contains(producible.requiredTech.id) && producible.requiredTech.EraCivilopediaName != "Hidden");
 		}
 
 		// Whether any of this player's cities has already constructed the given

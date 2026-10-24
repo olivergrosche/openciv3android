@@ -605,6 +605,18 @@ namespace C7GameData {
 				save.Players.Last().governmentId = defaultGovernment.id;
 			}
 
+			// Many map scenarios have no player setup (LEAD). As in a normal game, every playable civ can then be picked
+			// and starts in the first era with its starting techs; the units come from the starting locations.
+			if (theBiq.Lead == null) {
+				string firstEra = (theBiq.Eras ?? defaultBiq.Eras)[0].CivilopediaEntry;
+				foreach (SavePlayer player in save.Players.Where(p => !p.isBarbarian)) {
+					player.eraCivilopediaName = firstEra;
+					player.gold = 10;
+					player.knownTechs.UnionWith(save.Civilizations.Find(c => c.name == player.civilization).startingTechs);
+				}
+				return;
+			}
+
 			// Now fill in the rest of the data using the leader struct.
 			bool foundHuman = false;
 			int leadIndex = 0;
@@ -1000,7 +1012,7 @@ namespace C7GameData {
 
 			List<SavePlayer> playerWithEmbassies = new List<SavePlayer>();
 
-			for (int i = 0; i < theBiq.Lead.Length; ++i) {
+			for (int i = 0; i < (theBiq.Lead?.Length ?? 0); ++i) {
 				var lead = theBiq.Lead[i];
 				if (lead.StartEmbassies == 1) {
 					var player = save.Players[lead.Civ];
@@ -1955,7 +1967,7 @@ namespace C7GameData {
 					st.Prerequisites.Add(save.Techs[t.Prerequisite3].id);
 				}
 				if (t.Prerequisite4 > -1) {
-					st.Prerequisites.Add(save.Techs[t.Prerequisite3].id);
+					st.Prerequisites.Add(save.Techs[t.Prerequisite4].id);
 				}
 			}
 
@@ -2222,12 +2234,21 @@ namespace C7GameData {
 			}
 		}
 
-		private static void SetMapDimensions(BiqData biq, SaveGame save) {
+		private void SetMapDimensions(BiqData biq, SaveGame save) {
 			if (biq is not null && biq.Wmap is not null && biq.Wmap.Length > 0) {
 				save.Map.tilesTall = biq.Wmap[0].Height;
 				save.Map.tilesWide = biq.Wmap[0].Width;
-				save.Map.techRate = biq.Wsiz[biq.Wchr[0].WorldSize].TechRate;
-				save.Map.optimalNumberOfCities = biq.Wsiz[biq.Wchr[0].WorldSize].OptimalNumberOfCities;
+
+				// Map scenarios may leave out the world sizes or the world characteristics, or refer to a world size the
+				// file does not have. Then take the default world size closest to the map's area.
+				WSIZ[] sizes = biq.Wsiz is { Length: > 0 } ? biq.Wsiz : defaultBiq.Wsiz;
+				int size = biq.Wchr is { Length: > 0 } ? biq.Wchr[0].WorldSize : -1;
+				if (size < 0 || size >= sizes.Length) {
+					int area = save.Map.tilesTall * save.Map.tilesWide;
+					size = Array.IndexOf(sizes, sizes.MinBy(s => Math.Abs(s.Width * s.Height - area)));
+				}
+				save.Map.techRate = sizes[size].TechRate;
+				save.Map.optimalNumberOfCities = sizes[size].OptimalNumberOfCities;
 			}
 		}
 
