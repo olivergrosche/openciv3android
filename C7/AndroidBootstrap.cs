@@ -188,14 +188,24 @@ public partial class AndroidBootstrap : Node {
 		}
 	}
 
-	// Dialog windows get larger for fingers, but only as far as their content, laid out for baseSize at scale 1, still
-	// fits on the screen. Before, the window was clipped to the screen while the content kept growing, and on phones
-	// the buttons at the bottom were cut off.
+	// Dialog windows get larger for fingers, but only as far as their content, laid out for baseSize at scale 1, and
+	// the title bar above it still fit on the screen; they open centered below the top edge. Before, the window was
+	// clipped to the screen while its content kept growing, and on phones the buttons at the bottom were cut off.
 	public static void FitDialogForTouch(Window dialog, Vector2 baseSize) {
-		Vector2 screen = dialog.GetTree().Root.GetVisibleRect().Size - new Vector2(16, 16);
-		float scale = Mathf.Min(1.2f * TouchUiFactor, Mathf.Min(screen.X / baseSize.X, screen.Y / baseSize.Y));
+		Vector2 screen = dialog.GetTree().Root.GetVisibleRect().Size;
+		int title = dialog.GetThemeConstant("title_height");
+		Vector2 room = screen - new Vector2(16, 16 + title);
+		float scale = Mathf.Min(1.2f * TouchUiFactor, Mathf.Min(room.X / baseSize.X, room.Y / baseSize.Y));
 		dialog.ContentScaleFactor = scale;
 		dialog.Size = new Vector2I((int)(baseSize.X * scale), (int)(baseSize.Y * scale));
+		if (!dialog.HasMeta("fitted_for_touch")) {
+			dialog.SetMeta("fitted_for_touch", true);
+			dialog.VisibilityChanged += () => {
+				if (dialog.Visible) {
+					dialog.Position = new Vector2I((int)(screen.X - dialog.Size.X) / 2, title + (int)(screen.Y - title - dialog.Size.Y) / 2);
+				}
+			};
+		}
 		StyleDialogButtons(dialog);
 	}
 

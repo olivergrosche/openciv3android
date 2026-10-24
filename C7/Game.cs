@@ -203,14 +203,18 @@ public partial class Game : Node {
 
 		advisor.VisibilityChanged += OnAdvisorVisibilityChanged;
 
-		// The game data is built in the background; until then the screen would show an empty map.
-		CanvasLayer loadingNotice = LoadingOverlay.Show(this, L.T("Loading the game …"));
+		// The game data is built in the background, and the engine needs seconds more for the first turn. Until a unit
+		// is selected (or none is left to select) the screen would show an empty map, then "Please wait" over
+		// placeholder texts.
+		loadingNotice = LoadingOverlay.Show(this, L.T("Loading the game …"));
+		unitSelector.Connect(UnitSelector.SignalName.NewAutoselectedUnit, Callable.From<Variant>(_ => HideLoadingNotice()), (uint)ConnectFlags.OneShot);
+		unitSelector.Connect(UnitSelector.SignalName.NoMoreAutoselectableUnits, Callable.From(HideLoadingNotice), (uint)ConnectFlags.OneShot);
 		try {
 			await InitializeGame();
 			await StartGame();
-			loadingNotice.QueueFree();
+			GetTree().CreateTimer(60).Timeout += HideLoadingNotice; // in case neither happens
 		} catch (Exception ex) {
-			loadingNotice.QueueFree();
+			HideLoadingNotice();
 			errorOnLoad = true;
 			string message = ex.Message;
 			string[] stack = ex.StackTrace.Split("\r\n");   //for some reason it is returned with \r\n in the string as one line.  let's make it readable!
@@ -580,7 +584,17 @@ public partial class Game : Node {
 		}
 	}
 
+	private CanvasLayer loadingNotice;
+
+	private void HideLoadingNotice() {
+		if (loadingNotice != null && IsInstanceValid(loadingNotice)) {
+			loadingNotice.QueueFree();
+		}
+		loadingNotice = null;
+	}
+
 	private void OnPlayerStartTurn() {
+		HideLoadingNotice();
 		EngineStorage.ReadGameData((GameData gameData) => {
 			log.Information("Starting player turn");
 
@@ -681,7 +695,12 @@ public partial class Game : Node {
 
 	public void OnResolved() {
 		popupOverlay.OnHidePopup();
+		ignoreActionsUntilFrame = Engine.GetProcessFrames() + 2;
 	}
+
+	// The key that confirms a file dialog (Enter) is also the end-turn key. Actions are polled (ProcessActions), so they
+	// see that key press even though the dialog handled it, and the dialog is already closed by then.
+	private ulong ignoreActionsUntilFrame;
 
 	public void _on_Zoom_value_changed(float value) {
 		mapView.setCameraZoomFromMiddle(value);
@@ -1259,6 +1278,10 @@ public partial class Game : Node {
 	}
 
 	private void ProcessActions() {
+		// Keys typed into a dialog window (a file name) are not game commands, nor is the key that closed it.
+		if (Engine.GetProcessFrames() <= ignoreActionsUntilFrame || GetViewport().GetEmbeddedSubwindows().Count > 0) {
+			return;
+		}
 		Godot.Collections.Array<StringName> actions = InputMap.GetActions();
 
 		foreach (StringName action in actions) {
