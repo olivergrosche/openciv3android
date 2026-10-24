@@ -87,6 +87,12 @@ Installing ends a running game; save it first. The devices need:
   - The full-screen views are fixed 1024x768 layouts and already fill the height. The magnifier is the answer for them.
 - **Advisors:** F1-F11 do not exist on a tablet. On Android the advisor button opens a list of all advisors and screens (`Game.AdvisorMenu`).
 - **Popups** (`InteractablePopUpController`): translated, larger, and one tap chooses an option.
+- **Ambient sounds** (all platforms), in `C7/Audio/AmbienceSoundscape.cs`:
+  - Like Civ3: every 8-20 s, a lark, cricket, oriole, hawk, eagle or wolf plays, chosen by the terrain of a random known land tile on screen.
+  - The sounds are the eight files in `Sounds/Ambience Sfx`, set up in `C7/Lua/civ3/audio.lua`.
+  - Civ3 decides this inside its executable, so the terrain-to-sound table is our own.
+  - The volume is the "Ambience" slider.
+  - The Lua change has to reach the devices: `deploy.sh ... --data`.
 - **City screen:** shows the map at zoom 1 while open, because its tiles only fit the window at zoom 1, and restores the zoom on close.
 - **Scenario import** (`C7Engine/C7GameData/ImportCiv3.cs`, `Player.cs`):
   - Scenarios without player setup (LEAD) or world size import.

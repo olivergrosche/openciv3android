@@ -7,7 +7,15 @@ local AMBIENCE = SOUNDS .. "Ambience Sfx/"
 local audio = {}
 
 audio.ambience = {
-  oriole = AMBIENCE .. "Oriole.wav"
+  -- Played by AmbienceSoundscape according to the terrain in view.
+  cricket = AMBIENCE .. "Cricket.wav",
+  eagle = AMBIENCE .. "Eagle.wav",
+  hawk = AMBIENCE .. "Hawk.wav",
+  meadowlark = AMBIENCE .. "Meadowlark.wav",
+  oriole = AMBIENCE .. "Oriole.wav",
+  skylark = AMBIENCE .. "Skylark.wav",
+  wolf = AMBIENCE .. "wolf1.wav",
+  woodlark = AMBIENCE .. "Woodlark.wav",
 }
 
 audio.buttons = {

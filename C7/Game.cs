@@ -247,6 +247,7 @@ public partial class Game : Node {
 	private void InitializeAudio() {
 		GlobalAudio.manager.StopMusic();
 		// TODO: switch to in-game playlist / music logic
+		AddChild(new AmbienceSoundscape { Game = this, MapView = mapView });
 	}
 
 	private async Task StartGame() {
