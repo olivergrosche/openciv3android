@@ -110,7 +110,7 @@ public partial class TradeOfferUi : Tree {
 
 	public void RefreshUiForOffer() {
 		if (currentOffer.gold.HasValue) {
-			lumpSumGold.SetText(0, $"{currentOffer.gold.Value} gold");
+			lumpSumGold.SetText(0, L.F("{0} gold", currentOffer.gold.Value));
 			lumpSumGold.Visible = true;
 		} else {
 			lumpSumGold.Visible = false;

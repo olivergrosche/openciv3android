@@ -265,8 +265,8 @@ public partial class PlayerSetup : Control {
 		leaderHead.Scale = new Vector2(1.7f, 1.7f);
 		leaderHead.SetPosition(new Vector2(414, 46));
 
-		string traits = string.Join(", ", civilization.traits);
-		civLabel.Text = $"{civilization.leader} of the {civilization.noun}\n({traits})";
+		string traits = string.Join(", ", civilization.traits.Select(t => L.T(t.ToString())));
+		civLabel.Text = L.F("{0} of the {1}\n({2})", L.T(civilization.leader), L.T(civilization.noun), traits);
 	}
 
 	private List<SelectedOpponent> CollectSelectedOpponents() {

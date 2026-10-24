@@ -247,19 +247,29 @@ public partial class LowerRightInfoBox : Civ3TextureRect {
 				int gold = player.gold;
 				int goldPerTurn = player.CalculateGoldPerTurn();
 
-				var turnText = gD.timeOptions.GetDisplayTime(turnNumber);
+				var turnText = L.Time(gD.timeOptions.GetDisplayTime(turnNumber));
 				var gptText = $"{(goldPerTurn >= 0 ? "+" : "")}{goldPerTurn}";
-				yearAndGold.SetTextAndCenterLabel($"{turnText}  {gold} Gold ({gptText} per turn)").AddXOffset(extraXOffset);
+				yearAndGold.SetTextAndCenterLabel(L.F("{0}  {1} Gold ({2} per turn)", turnText, gold, gptText)).AddXOffset(extraXOffset);
 			}
 
 			// Tech progress.
-			scienceProgress.SetTextAndCenterLabel(player.SummarizeScience(gD)).AddXOffset(extraXOffset);
+			scienceProgress.SetTextAndCenterLabel(SummarizeScience(player, gD)).AddXOffset(extraXOffset);
 
 			// Civ and government.
-			civAndGovt.SetTextAndCenterLabel($"{player.civilization.name} - {player.government.name} (5.5.0)").AddXOffset(extraXOffset);
+			civAndGovt.SetTextAndCenterLabel(L.F("{0} - {1} (5.5.0)", L.T(player.civilization.name), L.T(player.government.name))).AddXOffset(extraXOffset);
 		});
 
 		base._Process(delta);
+	}
+
+	// Player.SummarizeScience, with translated text.
+	private static string SummarizeScience(Player player, GameData gD) {
+		Tech tech = gD.techs.Find(x => x.id == player.currentlyResearchedTech);
+		if (tech == null) {
+			return L.T("Not selected (-- turns)");
+		}
+		int turns = player.EstimateTurnsToResearch(gD, tech);
+		return turns == int.MaxValue ? L.F("{0} (-- turns)", L.T(tech.Name)) : L.F("{0} ({1} turns)", L.T(tech.Name), turns);
 	}
 
 	private void OnNewUnitSelected(ParameterWrapper<MapUnit> wrappedMapUnit) {

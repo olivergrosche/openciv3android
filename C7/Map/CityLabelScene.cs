@@ -195,15 +195,15 @@ namespace C7.Map {
 			int turnsUntilGrowth = city.TurnsUntilGrowth();
 			string turnsUntilGrowthText = turnsUntilGrowth == int.MaxValue || turnsUntilGrowth < 0 ? "- -" : "" + turnsUntilGrowth;
 
-			cityNameLabel.Text = $"{city.name} : {turnsUntilGrowthText}";
+			cityNameLabel.Text = $"{L.T(city.name)} : {turnsUntilGrowthText}";
 			if (city.itemBeingProduced != null) {
-				productionLabel.Text = $"{city.itemBeingProduced.name} : {city.TurnsUntilProductionFinished()}";
+				productionLabel.Text = $"{L.T(city.itemBeingProduced.name)} : {city.TurnsUntilProductionFinished()}";
 			} else {
 				productionLabel.Text = "-- : --";
 			}
 
 			if (city.TurnsUntilProductionFinished() == int.MaxValue && city.itemBeingProduced != null) {
-				productionLabel.Text = $"{city.itemBeingProduced.name} : --";
+				productionLabel.Text = $"{L.T(city.itemBeingProduced.name)} : --";
 			}
 			popSizeLabel.Text = city.residents.Count.ToString();
 

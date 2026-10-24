@@ -31,7 +31,7 @@ public partial class CivilizationDestroyed : Popup {
 		AddHeader("Military Advisor", 120);
 
 		Label message = new() {
-			Text = "The " + civNoun + " have been destroyed."
+			Text = L.F("The {0} have been destroyed.", L.T(civNoun))
 		};
 		message.SetPosition(new Vector2(25, 170));
 		AddChild(message);

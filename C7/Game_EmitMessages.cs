@@ -12,7 +12,7 @@ using static AdvisorHead;
 public partial class Game {
 	public void EmitDawnOfCivilizationSignal(MsgNewGame msg) {
 		var message = "PLACEHOLDER MSG";
-		var delimeter = "and";
+		var delimeter = L.T("and");
 		EngineStorage.ReadGameData(data => {
 			var controller = data.players.First(p => p.id == msg.controllerId);
 			var year = data.timeOptions.GetDisplayTime(data.turn);
@@ -25,12 +25,12 @@ public partial class Game {
 					sb.Append(delimeter).Append(" ");
 				}
 				sb.Append($"[url={trait}][color=Blue]");
-				sb.Append(trait);
+				sb.Append(L.T(trait.ToString()));
 				sb.Append("[/color][/url]");
 				sb.Append(" ");
 			}
 
-			var traits = sb.ToString();
+			var traits = sb.ToString().TrimEnd();
 
 			var sbt = new StringBuilder();
 			// [url=whatever][color=Blue]wrap[/color][/url]
@@ -40,20 +40,21 @@ public partial class Game {
 					sbt.Append(delimeter).Append(" ");
 				}
 				sbt.Append($"[url={tech.CivilopediaEntry}][color=Blue]");
-				sbt.Append(tech.Name);
+				sbt.Append(L.T(tech.Name));
 				sbt.Append("[/color][/url]");
 				sbt.Append(" ");
 			}
 
-			var techs = sbt.ToString();
+			var techs = sbt.ToString().TrimEnd();
 
-			var king = $"[b]{controller.civilization.leader}[/b]";
+			var king = $"[b]{L.T(controller.civilization.leader)}[/b]";
 
-			message = $"It is the year {year}. Your ancestors were nomads. " +
-					  $"But over the generations your people have learned the secrets of [i]farming," +
-					  $" road-building[/i], and [i]irrigation[/i], and they are ready to settle down." +
-					  $"\n\n{king}, your people are {traits}and have recently mastered {techs}." +
-					  $"\n\nThe people have vested [i]absolute power[/i] in you, trusting that you can build a Civilization to stand the test of time!";
+			message = L.F("It is the year {0}. Your ancestors were nomads. " +
+					  "But over the generations your people have learned the secrets of [i]farming," +
+					  " road-building[/i], and [i]irrigation[/i], and they are ready to settle down." +
+					  "\n\n{1}, your people are {2} and have recently mastered {3}." +
+					  "\n\nThe people have vested [i]absolute power[/i] in you, trusting that you can build a Civilization to stand the test of time!",
+					  L.Time(year), king, traits, techs);
 		});
 
 		EmitSignal(SignalName.InteractivePopUp, new ParameterWrapper<InteractablePopUp>(
@@ -131,10 +132,10 @@ public partial class Game {
 			var allPlayers = data.players;
 			var buttons = new List<ButtonAction>();
 			foreach (KeyValuePair<ID, PlayerRelationship> kvp in controller.playerRelationships) {
-				string status = kvp.Value.AtWar() ? "War" : "Peace";
+				string noun = L.T(allPlayers.Find(x => x.id == kvp.Key).civilization.noun);
 
 				var btn = new ButtonAction() {
-					message = $"{allPlayers.Find(x => x.id == kvp.Key).civilization.noun} (at {status})",
+					message = kvp.Value.AtWar() ? L.F("{0} (at War)", noun) : L.F("{0} (at Peace)", noun),
 					action = () => {
                         // EmitSignal(PopupOverlay.SignalName.HidePopup);
                         OnDiplomacySelected(new ParameterWrapper<ID>(kvp.Key));
@@ -179,8 +180,8 @@ public partial class Game {
 			new ConfirmPopUp(
 				controller.id,
 				"Domestic Advisor",
-				$"This worker has been ordered to {C7Action.ToTooltip(msg.workerJob.UIAction)} and will be done in {msg.turnsLeft} turns." +
-				$"\nDo you want them to stop?",
+				L.F("This worker has been ordered to {0} and will be done in {1} turns.\nDo you want them to stop?",
+					L.T(C7Action.ToTooltip(msg.workerJob.UIAction)), msg.turnsLeft),
 				Advisor.Domestic,
 				Mood.Happy,
 				"Yes, there is more important work to do!",
@@ -220,11 +221,17 @@ public partial class Game {
 			noText = "Oh, I see. Never mind..";
 			mood = Mood.Surprised;
 		}
+		// The engine builds the cost text in English; build it here again so that it can be translated.
+		string costMessage = msg.details.hurryProductionType switch {
+			Government.HurryProductionType.ForcedLabor => L.F("Are you sure? Hurrying {0} will take the lives of {1} citizen(s).", L.T(msg.city.itemBeingProduced.name), msg.details.popCost),
+			Government.HurryProductionType.PaidLabor => L.F("Hurrying {0} will cost {1} gold... Are you sure?", L.T(msg.city.itemBeingProduced.name), msg.details.goldCost),
+			_ => msg.details.costMessage,
+		};
 		EmitSignal(SignalName.InteractivePopUp, new ParameterWrapper<InteractablePopUp>(
 			new ConfirmPopUp(
 				controller.id,
 				"Domestic Advisor",
-				msg.details.costMessage,
+				costMessage,
 				Advisor.Domestic,
 				mood,
 				yesText,
@@ -238,9 +245,9 @@ public partial class Game {
 	}
 
 	public void EmitCityRansackedSignal(MsgCityRansacked msg) {
-		var ransacked = $"[url=no idea][color=Blue]ransacked[/color][/url]";
-		var message = $"{msg.city.name} was {ransacked} by {msg.barbTribe} tribe!" +
-					  $" They have carried away {msg.goldLiberated} gold!\nWe [i]must build[/i] our military!";
+		var ransacked = $"[url=no idea][color=Blue]{L.T("ransacked")}[/color][/url]";
+		var message = L.F("{0} was {1} by {2} tribe! They have carried away {3} gold!\nWe [i]must build[/i] our military!",
+			L.T(msg.city.name), ransacked, L.T(msg.barbTribe), msg.goldLiberated);
 
 		EmitSignal(SignalName.InteractivePopUp, new ParameterWrapper<InteractablePopUp>(
 			new InformationPopup(
@@ -265,7 +272,7 @@ public partial class Game {
 			new InformationPopup(
 				controller.id,
 				"Military Advisor",
-				$"The {msg.civilization.noun} have been destroyed.",
+				L.F("The {0} have been destroyed.", L.T(msg.civilization.noun)),
 				Advisor.Military,
 				friend ? Mood.Sad : Mood.Happy,
 				350
@@ -283,16 +290,14 @@ public partial class Game {
 		});
 
 		var winningMessage =
-			$"Supreme Lord, once again our magnificent armies are victorious!\n" +
-			$"We have destroyed {msg.city.name} and \"liberated\" {msg.goldTaken} gold!";
+			L.F("Supreme Lord, once again our magnificent armies are victorious!\nWe have destroyed {0} and \"liberated\" {1} gold!",
+				L.T(msg.city.name), msg.goldTaken);
 
 		var winningMood = Mood.Happy;
 
 		var losingMessage =
-			$"Terrible news, Sir!\n" +
-			$"The evil {attacker.civilization.adjective} have stolen " +
-			$"[i]{msg.goldTaken} gold[/i] from {msg.city.name} and burned it to the ground!\n" +
-			$"They should pay dearly for this atrocity!";
+			L.F("Terrible news, Sir!\nThe evil {0} have stolen [i]{1} gold[/i] from {2} and burned it to the ground!\nThey should pay dearly for this atrocity!",
+				L.T(attacker.civilization.noun), msg.goldTaken, L.T(msg.city.name));
 
 		var losingMood = Mood.Angry;
 
@@ -313,7 +318,7 @@ public partial class Game {
 			new InformationPopup(
 				controller.id,
 				"Military Advisor",
-				$"The {msg.aggressor.civilization.noun} declared war on the {msg.opponent.civilization.noun}",
+				L.F("The {0} declared war on the {1}", L.T(msg.aggressor.civilization.noun), L.T(msg.opponent.civilization.noun)),
 				Advisor.Military,
 				Mood.Sad,
 				400
@@ -340,7 +345,8 @@ public partial class Game {
 
 			var currentTurn = data.turn;
 
-			message = $"Sir, this will cause war with the {opponent.civilization.adjective} people.\nAre you sure?";
+			// {1}, the noun, is for languages where the adjective does not fit.
+			message = L.F("Sir, this will cause war with the {0} people.\nAre you sure?", L.T(opponent.civilization.adjective), L.T(opponent.civilization.noun));
 
 			yesAction = () => {
 				aggressor.DeclareWarOn(opponent, currentTurn);
@@ -415,7 +421,7 @@ public partial class Game {
 			new InformationPopup(
 				controller.id,
 				"Foreign Advisor",
-				$"The {noun} refused to acknowledge our envoy!",
+				L.F("The {0} refused to acknowledge our envoy!", L.T(noun)),
 				Advisor.Foreign,
 				Mood.Angry,
 				350
@@ -428,7 +434,7 @@ public partial class Game {
 			new ConfirmPopUp(
 				controller.id,
 				"Domestic Advisor",
-				$"[i]{msg.city.name}[/i] will riot! Are you sure you want to end your turn?",
+				L.F("[i]{0}[/i] will riot! Are you sure you want to end your turn?", L.T(msg.city.name)),
 				Advisor.Domestic,
 				Mood.Angry,
 				"Yes, let them riot!",
@@ -494,7 +500,7 @@ public partial class Game {
 				new InformationPopup(
 					controller.id,
 					"Domestic Advisor",
-					$"Our people are overthrowing our {msg.government.name}. Our Civilization is descending into Anarchy!",
+					L.F("Our people are overthrowing our {0}. Our Civilization is descending into Anarchy!", L.T(msg.government.name)),
 					Advisor.Domestic,
 					Mood.Surprised,
 					350
@@ -536,7 +542,7 @@ public partial class Game {
 			new ConfirmPopUp(
 				controller.id,
 				"Domestic Advisor",
-				$"Are you sure you want to abandon {msg.city.name}?",
+				L.F("Are you sure you want to abandon {0}?", L.T(msg.city.name)),
 				Advisor.Domestic,
 				Mood.Angry,
 				"Yes, we don't want it anymore.",
@@ -584,7 +590,7 @@ public partial class Game {
 	}
 
 	private void EmitTerrainImprovementReplacementConfirmationSignal(MsgReplaceTerrainImprovementConfirmation msg) {
-		var message = $"A previous terrain enhancement ({msg.terrainImprovement.key.Capitalize()}) will be replaced \nby this operation. Do you wish to continue?";
+		var message = L.F("A previous terrain enhancement ({0}) will be replaced \nby this operation. Do you wish to continue?", L.T(msg.terrainImprovement.key.Capitalize()));
 
 		EmitSignal(SignalName.InteractivePopUp, new ParameterWrapper<InteractablePopUp>(
 			new ConfirmPopUp(
@@ -604,7 +610,7 @@ public partial class Game {
 	}
 
 	private void EmitDisbandUnitConfirmationSignal(MsgDisbandUnitConfirmation msg) {
-		var message = $"Disband {msg.mapUnit.name}? Pardon me but these are OUR people.\nDo you really want to disband them?";
+		var message = L.F("Disband {0}? Pardon me but these are OUR people.\nDo you really want to disband them?", L.T(msg.mapUnit.name));
 
 		EmitSignal(SignalName.InteractivePopUp, new ParameterWrapper<InteractablePopUp>(
 			new ConfirmPopUp(
@@ -625,8 +631,8 @@ public partial class Game {
 
 	private void EmitVictorySignal(MsgVictory msg) {
 		var endMsg =
-			$"The {msg.winner.civilization.noun} have won a {msg.victory.Header()} victory!\n"
-			+ "This game is over: No further score will be entered.\n\n";
+			L.F("The {0} have won a {1} victory!\nThis game is over: No further score will be entered.\n\n",
+				L.T(msg.winner.civilization.noun), L.T(msg.victory.Header()));
 
 		var options = new List<ButtonAction>();
 
@@ -660,7 +666,7 @@ public partial class Game {
 
 		bool gridVisible = mapView != null ? mapView.gridLayer.visible : PreferencesSettings.GetShowGrid();
 		var showGridBtn = new ButtonAction() {
-			message = $"Show Grid (Ctrl+G): {(gridVisible ? "On" : "Off")}",
+			message = L.F("Show Grid (Ctrl+G): {0}", L.T(gridVisible ? "On" : "Off")),
 			action = () => {
 				if (mapView != null) {
 					bool newValue = !mapView.gridLayer.visible;

@@ -191,7 +191,7 @@ public partial class DealScreen : TextureRect {
 			int theirGoldValue = opponentOffer.GoldEquivalentFor(gD, opponentPlayer);
 			int ourGoldValue = humanOffer.GoldEquivalentFor(gD, opponentPlayer);
 			opponentResponse.Text =
-				$"\"I value my offer at {theirGoldValue} gold and I value your offer at {ourGoldValue} gold\"";
+				L.F("\"I value my offer at {0} gold and I value your offer at {1} gold\"", theirGoldValue, ourGoldValue);
 		});
 	}
 }

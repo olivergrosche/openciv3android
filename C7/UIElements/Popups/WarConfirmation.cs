@@ -30,7 +30,7 @@ public partial class WarConfirmation : Popup {
 		AddHeader("Foreign Advisor", 120);
 
 		Label warningMessage = new Label();
-		warningMessage.Text = $"This will cause war with the {opponent.civilization.noun}.\nAre you sure?";
+		warningMessage.Text = L.F("This will cause war with the {0}.\nAre you sure?", L.T(opponent.civilization.noun));
 		warningMessage.SetPosition(new Vector2(25, 170));
 		AddChild(warningMessage);
 

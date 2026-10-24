@@ -22,7 +22,7 @@ public partial class ErrorMessage : Popup {
 		//This appears to be the way to do multi line labels, see: https://godotengine.org/qa/30459/label-or-richtextlabel-auto-width
 		//Maybe there's an awesomer control we can user instead.
 		//But it should also be general-purpose, not just coded one-off here.
-		errorDescription.Text = "Not a valid save file\n" + message;
+		errorDescription.Text = L.T("Not a valid save file") + "\n" + message;
 		errorDescription.SetPosition(new Vector2(25, 162));
 		AddChild(errorDescription);
 

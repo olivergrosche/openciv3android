@@ -1,0 +1,414 @@
+keys,de
+"(-- turns)","(-- Runden)"
+"(9999999 turns)","(9999999 Runden)"
+"({0} turns)","({0} Runden)"
+"-??: Science
+-??: Entertainment
+-??: Corruption
+-{0}: Maintenance
+-{1}: Unit costs
+-??: To other civs","-??: Wissenschaft
+-??: Unterhaltung
+-??: Korruption
+-{0}: Unterhalt
+-{1}: Einheitenkosten
+-??: An andere Zivilisationen"
+"3 Billion","3 Milliarden"
+"4 Billion","4 Milliarden"
+"5 Billion","5 Milliarden"
+"A previous terrain enhancement ({0}) will be replaced 
+by this operation. Do you wish to continue?","Eine bestehende Geländeverbesserung ({0}) wird durch diese 
+Aktion ersetzt. Möchten Sie fortfahren?"
+"AGE","ALTER"
+"Activate","Aktivieren"
+"Allowed Units
+{0}","Erlaubte Einheiten
+{0}"
+"An installation of Civilization III was not found.
+You may provide the location of game files, OR play in standalone mode to use OpenCiv3 files only","Es wurde keine Installation von Civilization III gefunden.
+Sie können den Ort der Spieldateien angeben ODER im Standalone-Modus nur mit OpenCiv3-Dateien spielen"
+"Archipelago","Archipel"
+"Archipelago (60% water)","Archipel (60 % Wasser)"
+"Archipelago (70% water)","Archipel (70 % Wasser)"
+"Archipelago (80% water)","Archipel (80 % Wasser)"
+"Arid","Trocken"
+"Audio Preferences","Audio-Einstellungen"
+"Automate","Automatisieren"
+"Agricultural","Landwirtschaftlich"
+"Balanced","Ausgeglichen"
+"Bombard","Bombardieren"
+"Build Airfield","Flugplatz bauen"
+"Build Barricade","Barrikade errichten"
+"Build City","Stadt gründen"
+"Build Fortress","Festung bauen"
+"Build Mine","Bergwerk bauen"
+"Build Outpost","Außenposten errichten"
+"Build Radar Tower","Radarturm bauen"
+"Build Railroad","Eisenbahn bauen"
+"Build Road","Straße bauen"
+"CHOOSE YOUR WORLD","WÄHLEN SIE IHRE WELT"
+"CLIMATE","KLIMA"
+"CULTURE","KULTUR"
+"Cancel action.","Aktion abbrechen."
+"Change Production (Shift+right click)","Produktion ändern (Umschalt+Rechtsklick)"
+"Cities","Städte"
+"Clear Damage","Schäden beseitigen"
+"Clear Forest","Wald roden"
+"Clear Wetlands","Sumpf trockenlegen"
+"Commercial","Kommerziell"
+"Complete in {0} turns","Fertig in {0} Runden"
+"Contact","Kontakt"
+"Contact {0}","Kontakt mit {0}"
+"Continents","Kontinente"
+"Continents (60% water)","Kontinente (60 % Wasser)"
+"Continents (70% water)","Kontinente (70 % Wasser)"
+"Continents (80% water)","Kontinente (80 % Wasser)"
+"Continue.","Weiter."
+"Cool","Kühl"
+"Credits","Mitwirkende"
+"DIFFICULTY","SCHWIERIGKEITSGRAD"
+"Diplomatic Agreements","Diplomatische Abkommen"
+"Disband","Auflösen"
+"Disband {0}? Pardon me but these are OUR people. Do 
+you really want to disband them?","{0} auflösen? Verzeihung, aber das sind UNSERE Leute. Wollen Sie 
+sie wirklich auflösen?"
+"Do you really want to quit?","Wollen Sie das Spiel wirklich beenden?"
+"Domestic Advisor","Innenpolitischer Berater"
+"ENTER or SPACEBAR for next turn","EINGABE oder LEERTASTE für die nächste Runde"
+"End Turn","Runde beenden"
+"Enter amount...","Betrag eingeben ..."
+"Enter seed: ","Startwert eingeben:"
+"Exit","Beenden"
+"Expansionist","Expansionistisch"
+"Explore","Erkunden"
+"Foreign Advisor","Außenpolitischer Berater"
+"Fortify","Befestigen"
+"Fortify All ({0} units)","Alle befestigen ({0} Einheiten)"
+"From cities: +??
+From taxmen: +??
+From other civs: +??
+From interest: +??","Aus Städten: +??
+Von Steuerbeamten: +??
+Von anderen Zivilisationen: +??
+Aus Zinsen: +??"
+"GRANARY","NAHRUNGSLAGER"
+"Gold ({0} in treasury)","Gold ({0} in der Staatskasse)"
+"Goto","Gehe zu"
+"Government","Regierung"
+"Growing!","Wachstum!"
+"Growth in {0} turns.","Wachstum in {0} Runden."
+"Hall of Fame","Ruhmeshalle"
+"Hold","Halten"
+"How many turns to fast forward through?","Wie viele Runden sollen übersprungen werden?"
+"Huge","Riesig"
+"Hurry Production","Produktion beschleunigen"
+"I said DO IT!","Ich sagte: TUN SIE ES!"
+"IMPROVEMENTS","GEBÄUDE"
+"Import Civilization III Graphics","Civilization-III-Grafik verwenden"
+"Industrious","Fleißig"
+"Insufficient gold","Nicht genug Gold"
+"Irrigate","Bewässern"
+"LAND MASS AND WATER COVERAGE","LANDMASSE UND WASSERANTEIL"
+"LUXURIES
+","LUXUSGÜTER
+"
+"Large","Groß"
+"Load Error","Ladefehler"
+"Load Game","Spiel laden"
+"Load Scenario","Szenario laden"
+"Loading...","Lade ..."
+"Locate Civilization III files","Civilization-III-Dateien suchen"
+"Lump sum","Pauschalbetrag"
+"Main Menu","Hauptmenü"
+"Map","Karte"
+"Maybe you're right. Nevermind.","Vielleicht haben Sie recht. Vergessen Sie es."
+"Militaristic","Militaristisch"
+"Military Advisor","Militärberater"
+"Name this town?","Wie soll diese Stadt heißen?"
+"Net gain: {0}","Überschuss: {0}"
+"Net loss: {0}","Verlust: {0}"
+"Neutral: {0}","Ausgeglichen: {0}"
+"New Game","Neues Spiel"
+"Next Era","Nächstes Zeitalter"
+"No, not really","Nein, eigentlich nicht"
+"No. Maybe you are right, advisor.","Nein. Vielleicht haben Sie recht, Berater."
+"No. You can count me out.","Nein. Ohne mich."
+"No. You're right, perhaps we should reconsider.","Nein. Sie haben recht, wir sollten es uns noch einmal überlegen."
+"Not a valid save file","Kein gültiger Spielstand"
+"Not selected (-- turns)","Nicht gewählt (-- Runden)"
+"Notice: standalone mode makes use of AI placeholder art","Hinweis: Der Standalone-Modus verwendet KI-Platzhaltergrafiken"
+"OK. Sounds good.","OK. Klingt gut."
+"Oh No!","Oh nein!"
+"Open a Directory","Ordner öffnen"
+"PLAYER SETUP","SPIELEREINSTELLUNGEN"
+"PRODUCTION: {0} per turn","PRODUKTION: {0} pro Runde"
+"Pangaea","Pangäa"
+"Pangaea (60% water)","Pangäa (60 % Wasser)"
+"Pangaea (70% water)","Pangäa (70 % Wasser)"
+"Pangaea (80% water)","Pangäa (80 % Wasser)"
+"Peace Treaty","Friedensvertrag"
+"Pick the civilization...","Wählen Sie die Zivilisation ..."
+"Plant Forest","Wald pflanzen"
+"Play in standalone mode","Im Standalone-Modus spielen"
+"Please wait...","Bitte warten ..."
+"Population","Bevölkerung"
+"Preferences","Einstellungen"
+"Previous Era","Vorheriges Zeitalter"
+"Producing","Produziert"
+"Quick Start","Schnellstart"
+"Quit Game (ESC)","Spiel beenden (ESC)"
+"Random","Zufällig"
+"Religious","Religiös"
+"Retire","Zurücktreten"
+"Return to Menu","Zurück zum Menü"
+"SCIENCE ADVISOR","WISSENSCHAFTSBERATER"
+"STRATEGIC RESOURCES","STRATEGISCHE ROHSTOFFE"
+"Save Game","Spiel speichern"
+"Science Advisor","Wissenschaftsberater"
+"Scientific","Wissenschaftlich"
+"Seafaring","Seefahrend"
+"Select a new government type","Wählen Sie eine neue Regierungsform"
+"Sentry","Wache halten"
+"Sentry Enemy Only","Wache (nur Feinde)"
+"Shrinking!","Schrumpfend!"
+"Small","Klein"
+"Standard","Standard"
+"TEMPERATURE","TEMPERATUR"
+"Technology","Technologie"
+"Temperate","Gemäßigt"
+"That's it! Prepare for WAR!","Das reicht! Bereiten Sie sich auf KRIEG vor!"
+"That's it. Goodbye, {0}","Das war's. Auf Wiedersehen, {0}"
+"The {0} have been destroyed.","Die {0} wurden vernichtet."
+"The {0} refused to acknowledge our envoy!","Die {0} haben unseren Gesandten abgewiesen!"
+"This unit has already moved.","Diese Einheit hat sich bereits bewegt."
+"This will cause war with the {0}.
+Are you sure?","Das bedeutet Krieg mit den {0}.
+Sind Sie sicher?"
+"Tiny","Winzig"
+"Total Units
+{0}","Einheiten gesamt
+{0}"
+"Total: {0}/{1}","Gesamt: {0}/{1}"
+"Treasury: {0}","Staatskasse: {0}"
+"Turn {0}  {1} Gold (+{2} per turn)","Runde {0}  {1} Gold (+{2} pro Runde)"
+"Turn {0}  {1} Gold ({2} per turn)","Runde {0}  {1} Gold ({2} pro Runde)"
+"Unit Support Cost
+{0} gold/turn","Unterhalt der Einheiten
+{0} Gold/Runde"
+"Use OpenCiv3 Graphics","OpenCiv3-Grafik verwenden"
+"Very well.","Nun gut."
+"WORLD SIZE","WELTGRÖSSE"
+"Wait","Warten"
+"Wake","Aufwecken"
+"Wake All ({0} units)","Alle aufwecken ({0} Einheiten)"
+"We Offer","Wir bieten"
+"We Want","Wir wollen"
+"We would like to propose a deal...","Wir möchten Ihnen ein Geschäft vorschlagen ..."
+"Wet","Feucht"
+"What shall we explore now?","Was sollen wir als Nächstes erforschen?"
+"What's the big picture?","Wie sieht das Gesamtbild aus?"
+"YOUR CIVILIZATION","IHRE ZIVILISATION"
+"YOUR RIVALS","IHRE RIVALEN"
+"Yes I'm sure!","Ja, ich bin sicher!"
+"Yes, immediately!","Ja, sofort!"
+"Yes, let them riot!","Ja, sollen sie doch randalieren!"
+"Yes, we need to!","Ja, es muss sein!"
+"Yes, you know it's gonna be alright.","Ja, es wird schon alles gut gehen."
+"You already started a revolution. Remember?","Sie haben bereits eine Revolution begonnen. Schon vergessen?"
+"You are running OpenCiv3!","Sie spielen OpenCiv3!"
+"You say you want a revolution?","Sie wollen eine Revolution?"
+"Zoom to city","Zur Stadt zoomen"
+"""I value my offer at {0} gold and I value your offer at {1} gold""","""Ich bewerte mein Angebot mit {0} Gold und Ihr Angebot mit {1} Gold"""
+"""Let's get down to business...""","""Kommen wir zur Sache ..."""
+"""Never mind...""","""Vergessen Sie es ..."""
+"""Will you accept this deal?""","""Nehmen Sie dieses Angebot an?"""
+"{0} (-- turns)","{0} (-- Runden)"
+"{0} (Cautious)","{0} (Vorsichtig)"
+"{0} (at Peace)","{0} (Frieden)"
+"{0} (at War)","{0} (Krieg)"
+"{0} ({1} turns)","{0} ({1} Runden)"
+"{0} gold","{0} Gold"
+"{0} gold/turn to happiness","{0} Gold/Runde für Zufriedenheit"
+"{0} gold/turn to science  ({1} corrupt)","{0} Gold/Runde für Wissenschaft  ({1} Korruption)"
+"{0} gold/turn to taxes","{0} Gold/Runde an Steuern"
+"{0} of the {1}
+({2})","{0} der {1}
+({2})"
+"{0} per turn","{0} pro Runde"
+"{0} turns","{0} Runden"
+"{0} turns of anarchy left","Noch {0} Runden Anarchie"
+"{0} will riot! Are you sure?","In {0} wird es Unruhen geben! Sind Sie sicher?"
+"{0}/turn","{0}/Runde"
+"{0}  {1} Gold ({2} per turn)","{0}  {1} Gold ({2} pro Runde)"
+"-{0}: Science
+-{1}: Entertainment
+-{2}: Corruption
+-{3}: Maintenance
+-{4}: Unit costs
+-{5}: To other civs","-{0}: Wissenschaft
+-{1}: Unterhaltung
+-{2}: Korruption
+-{3}: Unterhalt
+-{4}: Einheitenkosten
+-{5}: An andere Zivilisationen"
+"From cities: +{0}
+From taxmen: +{1}
+From other civs: +{2}
+From interest: +{3}","Aus Städten: +{0}
+Von Steuerbeamten: +{1}
+Von anderen Zivilisationen: +{2}
+Aus Zinsen: +{3}"
+"Income: {0}","Einnahmen: {0}"
+"Expenses: {0}","Ausgaben: {0}"
+"Net gain: +{0}","Überschuss: +{0}"
+"BC","v. Chr."
+"AD","n. Chr."
+"AUDIO","AUDIO"
+"GAME","SPIEL"
+"Interface","Oberfläche"
+"MASTER","GESAMT"
+"Music","Musik"
+"Ambience","Umgebung"
+"Sound effects","Soundeffekte"
+"PREFERENCES","EINSTELLUNGEN"
+"RULES","REGELN"
+"UNITS","EINHEITEN"
+"BARBARIANS","BARBAREN"
+"Tutorial","Tutorial"
+"Normal","Normal"
+"Warm","Warm"
+"Load","Laden"
+"Back","Zurück"
+"OK","OK"
+"CANCEL","ABBRECHEN"
+"Yes","Ja"
+"No","Nein"
+"All NONE","Alle KEINE"
+"All Random","Alle zufällig"
+"Allow Conquest Victory","Sieg durch Eroberung erlauben"
+"Allow Domination Victory","Sieg durch Vorherrschaft erlauben"
+"Use Civilization III Media","Civilization-III-Medien verwenden"
+"Use OpenCiv3 Media","OpenCiv3-Medien verwenden"
+"Learn more at OpenCiv3.org","Mehr auf OpenCiv3.org"
+"Not Implemented yet :/","Noch nicht umgesetzt :/"
+"No unit options available yet.","Noch keine Einheitenoptionen verfügbar."
+"No information available","Keine Informationen verfügbar"
+"Name:","Name:"
+"Name: ","Name:"
+"Abandon City","Stadt aufgeben"
+"Change Production","Produktion ändern"
+"Unload","Entladen"
+"Terrain Info","Geländeinfo"
+"Zoom to {0}","Zu {0} zoomen"
+"Food: {0}","Nahrung: {0}"
+"Shields: {0}","Schilde: {0}"
+"Gold: {0}","Gold: {0}"
+"{0} ({1}% water)","{0} ({1} % Wasser)"
+"Advisors","Berater"
+"Trade Advisor","Handelsberater"
+"Cultural Advisor","Kulturberater"
+"Wonders of the World","Weltwunder"
+"Victory Status","Siegstatus"
+"Palace","Palast"
+"Space Race","Weltraumrennen"
+"Demographics","Demografie"
+"DOMESTIC ADVISOR","INNENPOLITISCHER BERATER"
+"TRADE ADVISOR","HANDELSBERATER"
+"MILITARY ADVISOR","MILITÄRBERATER"
+"FOREIGN ADVISOR","AUSSENPOLITISCHER BERATER"
+"CULTURAL ADVISOR","KULTURBERATER"
+"VICTORY STATUS","SIEGSTATUS"
+"WONDERS OF THE WORLD","WELTWUNDER"
+"To Win","Zum Sieg"
+"Top Rival","Stärkster Rivale"
+"Map Options","Kartenoptionen"
+"Preferences (Ctrl-P)","Einstellungen (Strg+P)"
+"Show Grid (Ctrl+G): {0}","Raster anzeigen (Strg+G): {0}"
+"On","Ein"
+"Off","Aus"
+"Dawn of Civilization","Anbruch der Zivilisation"
+"It is the year {0}. Your ancestors were nomads. But over the generations your people have learned the secrets of [i]farming, road-building[/i], and [i]irrigation[/i], and they are ready to settle down.
+
+{1}, your people are {2} and have recently mastered {3}.
+
+The people have vested [i]absolute power[/i] in you, trusting that you can build a Civilization to stand the test of time!","Wir schreiben das Jahr {0}. Ihre Vorfahren waren Nomaden. Doch über die Generationen hat Ihr Volk die Geheimnisse von [i]Ackerbau, Straßenbau[/i] und [i]Bewässerung[/i] erlernt und ist nun bereit, sesshaft zu werden.
+
+{1}, Ihr Volk ist {2} und beherrscht seit Kurzem {3}.
+
+Das Volk hat Ihnen [i]absolute Macht[/i] verliehen, im Vertrauen darauf, dass Sie eine Zivilisation errichten, die die Zeiten überdauert!"
+"and","und"
+"Sir, out Prophets need guidance. What shall we research?","Herr, unsere Propheten brauchen Führung. Was sollen wir erforschen?"
+"This worker has been ordered to {0} and will be done in {1} turns.
+Do you want them to stop?","Dieser Arbeiter hat den Auftrag „{0}“ und ist in {1} Runden fertig.
+Soll er aufhören?"
+"Yes, there is more important work to do!","Ja, es gibt Wichtigeres zu tun!"
+"No, carry on.","Nein, weitermachen."
+"It's that important. Get out my whip!","Es ist so wichtig. Holt meine Peitsche!"
+"Never mind.","Vergessen Sie es."
+"Don't argue with me. Start counting!","Keine Widerrede. Fangen Sie an zu zählen!"
+"Oh, I see. Never mind..","Ach so. Vergessen Sie es ..."
+"Are you sure? Hurrying {0} will take the lives of {1} citizen(s).","Sind Sie sicher? {0} zu beschleunigen kostet {1} Bürger das Leben."
+"Hurrying {0} will cost {1} gold... Are you sure?","{0} zu beschleunigen kostet {1} Gold ... Sind Sie sicher?"
+"The city is in disorder and cannot hurry production.","In der Stadt herrscht Aufruhr, die Produktion kann nicht beschleunigt werden."
+"We cannot hurry production with this government.","Mit dieser Regierungsform können wir die Produktion nicht beschleunigen."
+"ransacked","geplündert"
+"{0} was {1} by {2} tribe! They have carried away {3} gold!
+We [i]must build[/i] our military!","{0} wurde vom Stamm der {2} {1}! Sie haben {3} Gold geraubt!
+Wir [i]müssen[/i] unser Militär ausbauen!"
+"Supreme Lord, once again our magnificent armies are victorious!
+We have destroyed {0} and ""liberated"" {1} gold!","Erhabener Herrscher, wieder einmal haben unsere glorreichen Armeen gesiegt!
+Wir haben {0} zerstört und {1} Gold „befreit“!"
+"Terrible news, Sir!
+The evil {0} have stolen [i]{1} gold[/i] from {2} and burned it to the ground!
+They should pay dearly for this atrocity!","Schreckliche Nachrichten, Herr!
+Die niederträchtigen {0} haben [i]{1} Gold[/i] aus {2} geraubt und die Stadt niedergebrannt!
+Für diese Gräueltat sollen sie teuer bezahlen!"
+"The {0} declared war on the {1}","Die {0} haben den {1} den Krieg erklärt"
+"Sir, this will cause war with the {0} people.
+Are you sure?","Herr, das bedeutet Krieg mit den {1}.
+Sind Sie sicher?"
+"No. You're right, perhaps we should re-consider.","Nein. Sie haben recht, wir sollten es uns noch einmal überlegen."
+"You 're right! They are scum!","Sie haben recht! Das ist Abschaum!"
+"No. We should respect our neighbors.","Nein. Wir sollten unsere Nachbarn respektieren."
+"Let us destroy them, sir!","Vernichten wir sie, Herr!"
+"[i]{0}[/i] will riot! Are you sure you want to end your turn?","In [i]{0}[/i] wird es Unruhen geben! Wollen Sie die Runde wirklich beenden?"
+"No, you are right, I will handle it.","Nein, Sie haben recht, ich kümmere mich darum."
+"Government Types","Regierungsformen"
+"Select a new government type.","Wählen Sie eine neue Regierungsform."
+"Sir! We are already undergoing a revolt..!
+
+Did you take your medication?","Herr! Wir sind bereits mitten in einer Revolte ...!
+
+Haben Sie Ihre Medizin genommen?"
+"Our people are overthrowing our {0}. Our Civilization is descending into Anarchy!","Unser Volk stürzt unseren {0}. Unsere Zivilisation versinkt in Anarchie!"
+"You say you want a Revolution?!","Sie wollen eine Revolution?!"
+"Yes. You know it's gonna be alright.","Ja. Es wird schon alles gut gehen."
+"Are you sure you want to abandon {0}?","Wollen Sie {0} wirklich aufgeben?"
+"Yes, we don't want it anymore.","Ja, wir wollen sie nicht mehr."
+"No. Sorry.","Nein. Entschuldigung."
+"Yes, immediately.","Ja, sofort."
+"Do as I say!","Tun Sie, was ich sage!"
+"No, don't let all that hard work go to waste.","Nein, all die harte Arbeit soll nicht umsonst gewesen sein."
+"Disband {0}? Pardon me but these are OUR people.
+Do you really want to disband them?","{0} auflösen? Verzeihung, aber das sind UNSERE Leute.
+Wollen Sie sie wirklich auflösen?"
+"The {0} have won a {1} victory!
+This game is over: No further score will be entered.
+
+","Die {0} haben einen Sieg durch {1} errungen!
+Das Spiel ist vorbei: Es werden keine weiteren Punkte gewertet.
+
+"
+"Conquest","Eroberung"
+"Domination","Vorherrschaft"
+"Good! I’m Done!","Gut! Ich bin fertig!"
+"Wait, lemme just play a couple of more turns...","Moment, ich spiele noch ein paar Runden ..."
+"You Win!","Sie haben gewonnen!"
+"Care to trade World Maps?","Wollen wir Weltkarten tauschen?"
+"Non-combat units may not attack.","Nicht kämpfende Einheiten dürfen nicht angreifen."
+"Only combat units can capture cities and improvements.","Nur Kampfeinheiten können Städte und Geländeverbesserungen erobern."
+"No aggression against alliance.","Keine Angriffe auf Verbündete."
+"Artillery bombardment failed.","Der Artilleriebeschuss ist gescheitert."
+"Wealth","Wohlstand"
+"Babylonia","Babylonien"
+"Demigod","Halbgott"

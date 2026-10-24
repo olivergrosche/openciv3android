@@ -34,7 +34,7 @@ public partial class TalkScreen : TextureRect {
 		EngineStorage.ReadGameData((GameData gD) => {
 			Player opponentPlayer = gD.players.Find(x => x.id == opponentPlayerId);
 			GetParent<Diplomacy>().AddLeaderHeadAndLabel(this, opponentPlayer, fontTheme);
-			civNameText = $"{opponentPlayer.civilization.name} (Cautious)";
+			civNameText = L.F("{0} (Cautious)", L.T(opponentPlayer.civilization.name));
 			leaderName = opponentPlayer.civilization.leader;
 		});
 
@@ -75,7 +75,7 @@ public partial class TalkScreen : TextureRect {
 
 		Button goodbye = new();
 		goodbye.FocusMode = Control.FocusModeEnum.None;
-		goodbye.Text = $"That's it. Goodbye, {leaderName}";
+		goodbye.Text = L.F("That's it. Goodbye, {0}", L.T(leaderName));
 		goodbye.SetPosition(new Vector2(512 - 205, offset));
 		goodbye.Theme = fontTheme;
 		goodbye.Pressed += () => { GetParent<Diplomacy>().Hide(); };

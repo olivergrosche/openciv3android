@@ -220,24 +220,26 @@ public partial class DomesticAdvisor : Control {
 			luxurySlider.Value = luxuryRate;
 			luxurySliderLabel.Text = $"{luxuryRate * 10}%";
 
-			governmentLabel.Text = $"{playerController.government.name}";
+			governmentLabel.Text = L.T(playerController.government.name);
 			scienceStatus.Text = playerController.SummarizeScience(gameData);
-			treasury.Text = $"Treasury: {playerController.gold}";
+			treasury.Text = L.F("Treasury: {0}", playerController.gold);
 
-			incomeDetails.Text = $"From cities: +{totalIncome.CityInflows()}\nFrom taxmen: +{totalIncome.taxmenTaxes}\nFrom other civs: +{totalIncome.fromOtherCivs}\nFrom interest: +{totalIncome.interest}";
-			expenseDetails.Text = $"-{totalIncome.beakers}: Science\n-{totalIncome.happiness}: Entertainment\n-{totalIncome.corrupted}: Corruption\n-{totalIncome.maintenance}: Maintenance\n-{totalIncome.unitSupport}: Unit costs\n-{totalIncome.toOtherCivs}: To other civs";
-			incomeSummary.Text = $"Income: {totalIncome.Inflows()}";
-			expenseSummary.Text = $"Expenses: {totalIncome.Outflows()}";
+			incomeDetails.Text = L.F("From cities: +{0}\nFrom taxmen: +{1}\nFrom other civs: +{2}\nFrom interest: +{3}",
+				totalIncome.CityInflows(), totalIncome.taxmenTaxes, totalIncome.fromOtherCivs, totalIncome.interest);
+			expenseDetails.Text = L.F("-{0}: Science\n-{1}: Entertainment\n-{2}: Corruption\n-{3}: Maintenance\n-{4}: Unit costs\n-{5}: To other civs",
+				totalIncome.beakers, totalIncome.happiness, totalIncome.corrupted, totalIncome.maintenance, totalIncome.unitSupport, totalIncome.toOtherCivs);
+			incomeSummary.Text = L.F("Income: {0}", totalIncome.Inflows());
+			expenseSummary.Text = L.F("Expenses: {0}", totalIncome.Outflows());
 
 			int goldPerTurn = playerController.CalculateGoldPerTurn();
 			if (goldPerTurn > 0) {
-				sumSummary.Text = $"Net gain: +{goldPerTurn}";
+				sumSummary.Text = L.F("Net gain: +{0}", goldPerTurn);
 				growth.Text = "Growing!";
 			} else if (goldPerTurn < 0) {
-				sumSummary.Text = $"Net loss: {goldPerTurn}";
+				sumSummary.Text = L.F("Net loss: {0}", goldPerTurn);
 				growth.Text = "Shrinking!";
 			} else {
-				sumSummary.Text = $"Neutral: {goldPerTurn}";
+				sumSummary.Text = L.F("Neutral: {0}", goldPerTurn);
 				growth.Text = "Balanced";
 			}
 
@@ -249,7 +251,7 @@ public partial class DomesticAdvisor : Control {
 			changeGovernment.Disabled = playerController.GetAvailableGovernments(gameData).Count == 1;
 
 			if (playerController.government.transitionType && playerController.inAnarchyUntilTurn > gameData.turn) {
-				DialogBoxAdvise.Text = $"{playerController.inAnarchyUntilTurn - gameData.turn} turns of anarchy left";
+				DialogBoxAdvise.Text = L.F("{0} turns of anarchy left", playerController.inAnarchyUntilTurn - gameData.turn);
 			}
 
 			foreach (var node in cityListContainer.GetChildren()) {
@@ -397,8 +399,8 @@ public partial class DomesticAdvisor : Control {
 
 		Label productionLabel = new();
 		productionLabel.CustomMinimumSize = new Vector2(75, 0);
-		string turnsLeft = city.TurnsUntilProductionFinished() == int.MaxValue ? "(9999999 turns)" : $"({city.TurnsUntilProductionFinished()} turns)";
-		productionLabel.Text = $"{city.itemBeingProduced.name}\n{turnsLeft}";
+		string turnsLeft = city.TurnsUntilProductionFinished() == int.MaxValue ? L.T("(9999999 turns)") : L.F("({0} turns)", city.TurnsUntilProductionFinished());
+		productionLabel.Text = $"{L.T(city.itemBeingProduced.name)}\n{turnsLeft}";
 		productionLabel.VerticalAlignment = VerticalAlignment.Center;
 		productionLabel.ClipText = true;
 		productionLabel.TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis;

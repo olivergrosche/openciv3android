@@ -47,13 +47,13 @@ public partial class ProductionMenu : Civ3TextureRect {
 			int buildTime = city.TurnsToProduce(option);
 
 			TreeItem child = tree.CreateItem(root);
-			string text = $"{option.name}";
+			string text = L.T(option.name);
 			if (option is UnitPrototype proto) {
 				string attackDesc = (proto.bombard > 0) ? $"{proto.attack}({proto.bombard})" : proto.attack.ToString();
 				text += $" {attackDesc}.{proto.defense}.{proto.movement}";
 			}
 			child.SetText(0, text);
-			child.SetText(1, $"{buildTime} turns");
+			child.SetText(1, L.F("{0} turns", buildTime));
 			child.SetIcon(0, RightClickChooseProductionMenu.GetProducibleIcon(option, city.owner));
 			child.SetCustomMinimumHeight(40);
 			child.SetAutowrapMode(0, TextServer.AutowrapMode.WordSmart);

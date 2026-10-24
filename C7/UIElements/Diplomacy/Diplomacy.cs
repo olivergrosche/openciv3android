@@ -75,7 +75,7 @@ public partial class Diplomacy : CenterContainer {
 		leaderHead.SetPosition(new Vector2(512 - (115 * 1.7f) / 2, 59 + 120 - (115 * 1.7f) / 2));
 		node.AddChild(leaderHead);
 
-		string civNameText = $"{player.civilization.name} (Cautious)";
+		string civNameText = L.F("{0} (Cautious)", L.T(player.civilization.name));
 		Label civName = new();
 		civName.SetPosition(new Vector2(0, 330));
 		node.AddChild(civName);

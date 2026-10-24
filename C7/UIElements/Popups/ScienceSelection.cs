@@ -102,11 +102,11 @@ public partial class ScienceSelection : Popup {
 
 	private void AddItem(GameData gameData, Tech tech, OptionButton optionButton) {
 		if (claimingFreeTech) {
-			optionButton.AddItem(tech.Name);
+			optionButton.AddItem(L.T(tech.Name));
 		} else {
 			int turns = player.EstimateTurnsToResearch(gameData, tech);
 			string turnsStr = turns == int.MaxValue ? "--" : $"{turns}";
-			optionButton.AddItem($"{tech.Name} ({turnsStr} turns)");
+			optionButton.AddItem(L.F("{0} ({1} turns)", L.T(tech.Name), turnsStr));
 		}
 		options.Add(tech);
 	}

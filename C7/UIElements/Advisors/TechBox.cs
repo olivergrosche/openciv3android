@@ -94,17 +94,17 @@ public partial class TechBox : TextureButton {
 		int charLimitOfCurrentBox = (int)((TextureNormal.GetWidth() - boxBorderWidth) / averageCharLength);
 
 		int estimatedTurns = EngineStorage.gameData.GetFirstHumanPlayer().EstimateTurnsToResearch(EngineStorage.gameData, tech);
-		string estimatedTurnsString = estimatedTurns > 50 ? $"(-- turns)" : $"({estimatedTurns} turns)";
+		string estimatedTurnsString = estimatedTurns > 50 ? L.T("(-- turns)") : L.F("({0} turns)", estimatedTurns);
 
 		string techName = tech.Name;
 		string prepend = techState is TechState.kInProgress or TechState.kQueued ? $"{queueNumber}." : "";
 
 		if (techState is TechState.kInProgress) {
-			techName = $"{prepend} {tech.Name} {estimatedTurnsString}";
+			techName = $"{prepend} {L.T(tech.Name)} {estimatedTurnsString}";
 		} else if (techState is TechState.kQueued) {
-			techName = $"{prepend} {tech.Name}";
+			techName = $"{prepend} {L.T(tech.Name)}";
 		} else if (techState is TechState.kPossible) {
-			techName = $"{tech.Name} {estimatedTurnsString}";
+			techName = $"{L.T(tech.Name)} {estimatedTurnsString}";
 		}
 
 		UpdateLabelTheme();

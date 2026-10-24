@@ -30,7 +30,7 @@ public partial class GovernmentSelection : Popup {
 
 		int vOffset = 65;
 		foreach (Government g in governments) {
-			AddButton($"{g.name}", vOffset, () => {
+			AddButton(L.T(g.name), vOffset, () => {
 				Node parent = GetParent();
 				new SelectGovernmentMsg(player, g).send();
 				parent.EmitSignal(PopupOverlay.SignalName.HidePopup);

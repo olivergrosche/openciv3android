@@ -351,7 +351,7 @@ public partial class WorldSetup : Control {
 		ResetLandformGraphics();
 		large.Visible = true;
 		button.ButtonPressed = true;
-		label.Text = $"{landform} ({(int)ocean}% water)";
+		label.Text = L.F("{0} ({1}% water)", L.T(landform.ToString()), (int)ocean);
 	}
 
 	private void SelectClimate() {

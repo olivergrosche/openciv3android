@@ -51,11 +51,11 @@ public partial class MilitaryAdvisor : Control {
 			Player player = gameData.GetFirstHumanPlayer();
 			var (totalUnits, allowedUnits, unitSupportCost) = player.TotalUnitsAllowedUnitsAndSupportCost();
 
-			_totalUnitsLabel.SetTextAndCenterLabel($"Total Units\n{totalUnits}");
+			_totalUnitsLabel.SetTextAndCenterLabel(L.F("Total Units\n{0}", totalUnits));
 			_totalUnitsLabel.Position += new Vector2(-50, 0);
-			_allowedUnitsLabel.SetTextAndCenterLabel($"Allowed Units\n{allowedUnits}");
+			_allowedUnitsLabel.SetTextAndCenterLabel(L.F("Allowed Units\n{0}", allowedUnits));
 			_allowedUnitsLabel.Position += new Vector2(-50, 0);
-			_unitSupportCostLabel.SetTextAndCenterLabel($"Unit Support Cost\n{unitSupportCost} gold/turn");
+			_unitSupportCostLabel.SetTextAndCenterLabel(L.F("Unit Support Cost\n{0} gold/turn", unitSupportCost));
 			_unitSupportCostLabel.Position += new Vector2(-50, 0);
 
 			_advisorHead.Texture =

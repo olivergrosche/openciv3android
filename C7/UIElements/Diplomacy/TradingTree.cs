@@ -47,7 +47,7 @@ public partial class TradingTree : Tree {
 		// Gold
 		{
 			goldHeader = this.CreateItem(root);
-			goldHeader.SetText(0, $"Gold ({playerGold} in treasury)");
+			goldHeader.SetText(0, L.F("Gold ({0} in treasury)", playerGold));
 			goldHeader.Collapsed = true;
 
 			// TODO: per-turn gold
