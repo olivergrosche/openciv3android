@@ -129,11 +129,13 @@ public partial class MainMenu : Node {
 		return false;
 	}
 
+	// The button works as a switch: it shows the media in use, and pressing it changes to the other. The menu itself
+	// looks the same with both, so a label like "Use OpenCiv3 Media" left players unsure whether anything happened.
 	private void SetToggleGraphicsText() {
 		if (C7Settings.UseStandaloneMode()) {
-			ButtonContainer.ToggleGraphics.Text = "Use Civilization III Media";
+			ButtonContainer.ToggleGraphics.Text = "Graphics: OpenCiv3";
 		} else {
-			ButtonContainer.ToggleGraphics.Text = "Use OpenCiv3 Media";
+			ButtonContainer.ToggleGraphics.Text = "Graphics: Civilization III";
 		}
 	}
 
