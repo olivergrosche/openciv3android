@@ -34,7 +34,7 @@ Updating to a newer upstream version: see [UPDATING.md](UPDATING.md).
 | `scripts/update-translations.sh` | regenerates `names.csv` and `ui.csv` and lists untranslated names and interface texts |
 | `scripts/init-submodules.sh` | checks out `C7/Assets` and `C7/addons/markdownlabel` over https |
 | `l10n/` | `names_de.tsv` (German names) and `ui_de.tsv` (German interface texts), and the Perl tools that turn them into `C7/Translations/names.csv` and `ui.csv` |
-| `tools/BiqImportTest` | imports a Civ3 scenario (.biq) and builds the game data on the PC, without Godot |
+| `tools/BiqImportTest` | imports a Civ3 scenario (.biq) and builds the game data on the PC, without Godot; with a fourth argument it saves the scenario as OpenCiv3 JSON, which "Load Scenario" opens without `conquests.biq` |
 | `tools/BldgDump` | lists a .biq's buildings with required techs, hidden techs and the civs' free techs |
 | `godot/` | patch for Godot 4.4.1, `build-template.sh` and `make-template.py` that build the patched export template |
 

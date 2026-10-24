@@ -1,5 +1,7 @@
 // Checks whether OpenCiv3 (src-dev) can import a Civ3 Conquests scenario (.biq) and turn it into game data, without
-// starting the game: dotnet run -- <scenario.biq> <Civ3 folder> <C7/Lua folder>
+// starting the game: dotnet run -- <scenario.biq> <Civ3 folder> <C7/Lua folder> [out.json]
+// With out.json it also saves the imported scenario in OpenCiv3's own format, which "Load Scenario" opens like a .biq
+// (without needing Conquests/conquests.biq). The Civilopedia text is not saved; the game reads it from Civ3.
 using System;
 using System.IO;
 using System.Linq;
@@ -26,6 +28,10 @@ class Program {
 		Console.WriteLine($"map {save.Map.tilesWide}x{save.Map.tilesTall}, civs {save.Civilizations.Count}, players {save.Players.Count}, cities {save.Cities.Count}, unit types {save.UnitPrototypes.Count}, units {save.Units.Count}, techs {save.Techs.Count}, governments {save.Governments.Count}");
 		Console.WriteLine("civs: " + string.Join(", ", save.Civilizations.Select(c => c.name)));
 		Console.WriteLine("players: " + string.Join(", ", save.Players.Select(p => $"{p.civilization}{(p.human ? "*" : "")}")));
+		if (args.Length > 3) {
+			save.Save(args[3]);
+			Console.WriteLine($"saved {args[3]} ({new FileInfo(args[3]).Length / 1024} KB)");
+		}
 		start = DateTime.Now;
 		GameMode mode = GameMode.Load(lua, save.GameModeConfig);
 		GameData data = save.ToGameData(mode.behaviors);
