@@ -1,5 +1,8 @@
 # OpenCiv3
 
+> [!IMPORTANT]
+> This is an **unofficial Android port** (touch controls, German translation) on top of OpenCiv3's `Development` branch, not made or endorsed by the OpenCiv3 team. See [android-port/README.md](android-port/README.md) for what it changes and how to build it, and report its problems here, not upstream.
+
 **OpenCiv3** (formerly known by the codename "C7") is an open-source, mod-oriented remake of _Civilization III_ by the fan community built with Godot and C#, with capabilities inspired by other 4X games and lessons learned in Civ3 modding. We aim to create a new game that looks and plays like Civ3 but incorporates features from the best of the genre and our own dreams.
 
 ***OpenCiv3 is under active development and currently in a pre-alpha state.*** It is a rudimentary playable game but lacking many mechanics and late-game content, and errors are likely. Keep up with our development for the latest updates and opportunities to contribute!
