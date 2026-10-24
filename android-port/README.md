@@ -30,7 +30,7 @@ Updating to a newer upstream version: see [UPDATING.md](UPDATING.md).
 | `scripts/env.sh` | shared settings; all scripts read it |
 | `scripts/env.local.sh` | toolbox path, adb serials of the devices and signing key of this machine; not in git, start from `env.local.sh.example` |
 | `scripts/build-apk.sh` | builds `android-port/out/openciv3android.apk` |
-| `scripts/deploy.sh` | installs the APK on `tablet` or `pixel`; `--data` also copies Assets, Lua and Text |
+| `scripts/deploy.sh` | installs the APK on `tablet` or `pixel` |
 | `scripts/update-translations.sh` | regenerates `names.csv` and `ui.csv` and lists untranslated names and interface texts |
 | `scripts/init-submodules.sh` | checks out `C7/Assets` and `C7/addons/markdownlabel` over https |
 | `l10n/` | `names_de.tsv` (German names) and `ui_de.tsv` (German interface texts), and the Perl tools that turn them into `C7/Translations/names.csv` and `ui.csv` |
@@ -60,20 +60,24 @@ The editor settings in `%APPDATA%\Godot\editor_settings-4.4.tres` point to the J
 cp android-port/scripts/env.local.sh.example android-port/scripts/env.local.sh   # once, then fill it in
 android-port/scripts/init-submodules.sh     # once per clone
 android-port/scripts/build-apk.sh
-android-port/scripts/deploy.sh tablet        # or pixel; add --data after an update
+android-port/scripts/deploy.sh tablet        # or pixel
 ```
 
-Installing ends a running game; save it first. The devices need:
-- `Documents/Civ3`: Civ3 without exe, dll, pdf and videos, about 1.5 GB. It includes `Conquests/conquests.biq`, the German patch's rules, which loading a `.biq` scenario always reads; GOG has none. The game also finds Civ3 under any name directly in `Documents` or `Download`. Without Civ3 it runs with OpenCiv3's own graphics; the main menu switch "Grafik: OpenCiv3 / Civilization III" changes between them, and asks for the Civ3 folder if it finds none.
-- `Documents/OpenCiv3`: `Assets`, `Lua` and `Text` from `C7/`, plus `C7.ini` with `civ3InstallDir = /storage/emulated/0/Documents/Civ3`. Saved games go to `Documents/OpenCiv3/Saves`.
+Installing ends a running game; save it first. `deploy.sh` grants "All files access" (appops MANAGE_EXTERNAL_STORAGE), which a player grants on the app's setup screen instead.
 
-`deploy.sh` grants "All files access" (appops MANAGE_EXTERNAL_STORAGE).
+The APK carries the game data (`Assets`, `Lua`, `Text`) as `AndroidData/data.zip`, which `build-apk.sh` packs, with `AndroidData/data-version.txt` naming the build. On the device:
+- `Documents/OpenCiv3`: the game data, unpacked by the app; `C7.ini`; `log.txt`; saved games in `Saves`.
+- Civ3, optional: copied by the player into `Documents` or `Download` under any name, or to `Documents/Civ3`. Here it is a Civ3 without exe, dll, pdf and videos, about 1.5 GB, with `Conquests/conquests.biq` from the German patch, which loading a `.biq` scenario always reads; GOG has none. Without Civ3 the game runs with OpenCiv3's own graphics. The main menu switch "Grafik: OpenCiv3 / Civilization III" changes between them, and asks for the Civ3 folder if it finds none.
 
 ## What the port changes
 
-- **Data paths:** `AndroidBootstrap.cs` is the first autoload. On Android it:
+- **First start and data** (`AndroidBootstrap.cs`, the first autoload):
+  - Without "All files access", Android hides every file in `Documents` that is not a picture, video or sound. A setup screen therefore covers the main menu and explains the permission; its button opens Android's page for it.
+  - When the permission is there and `Documents/OpenCiv3/.data-version` differs from the APK's `data-version.txt`, the app unpacks the game data, with a progress line. The APK stores the zip compressed, where every seek would inflate it again from the start, so the zip is first copied to the app's cache in one go; 100 MB then take about 3 seconds. `C7.ini`, `Saves` and `log.txt` stay.
+  - Afterwards the app restarts itself (Godot's `ProcessPhoenix` through `JavaClassWrapper`), because the game reads its settings and rules only at start.
+- **Data paths:** `AndroidBootstrap.cs` also:
   - switches to `Documents/OpenCiv3`;
-  - sets `CIV3_HOME`;
+  - sets `CIV3_HOME` to the Civ3 folder it finds (`FindCiv3`);
   - gives MoonSharp a platform without console streams, because Android has none.
 
   `GamePaths.BaseDir` is the data folder.
@@ -97,7 +101,6 @@ Installing ends a running game; save it first. The devices need:
   - The sounds are the eight files in `Sounds/Ambience Sfx`, set up in `C7/Lua/civ3/audio.lua`.
   - Civ3 decides this inside its executable, so the terrain-to-sound table is our own.
   - The volume is the "Ambience" slider.
-  - The Lua change has to reach the devices: `deploy.sh ... --data`.
 - **City screen:** shows the map at zoom 1 while open, because its tiles only fit the window at zoom 1, and restores the zoom on close.
 - **Scenario import** (`C7Engine/C7GameData/ImportCiv3.cs`, `Player.cs`):
   - Scenarios without player setup (LEAD) or world size import.
@@ -130,7 +133,9 @@ Godot CSV translations in `C7/Translations`, following the system language:
 - `names.csv` comes from `l10n/names_de.tsv`: all 1383 names of `C7/Lua/civ3/ruleset.json` (units, buildings, techs, resources, terrain, civilizations, leaders, cities), about 600 of them with a German form. It is our own translation. `l10n/name-keys.pl` lists the names in the rules, so `update-translations.sh` reports the ones that upstream adds.
   - Where English uses one word for the people and the adjective ("Chinese"), the table has the people ("Chinesen"), because the interface mostly shows that ("Krieg mit den {0}").
   - Cities keep their English names unless German has its own (Moskau, Köln, Kopenhagen).
-- `ui.csv` (about 330 interface texts) comes from `l10n/ui_de.tsv`.
+- `ui.csv` (about 340 interface texts) comes from `l10n/ui_de.tsv`.
+
+Both `.csv.import` files have `compress=false`. Godot's compressed translation hashes the key bytes with `char`, which is signed on the PC that builds the table and unsigned on ARM. Every key with a byte above 0x7F (“ ”, …, ã, é) then misses on the device, while the same lookup works on the PC.
 
 Static Control texts are translated by Godot. Texts built in code go through `C7/L.cs`:
 - `L.T(name)`;

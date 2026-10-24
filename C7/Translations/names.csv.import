@@ -13,5 +13,5 @@ dest_files=["res://Translations/names.de.translation"]
 
 [params]
 
-compress=true
+compress=false
 delimiter=0

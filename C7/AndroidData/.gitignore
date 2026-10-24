@@ -1,0 +1,3 @@
+# Game data packed into the APK by android-port/scripts/build-apk.sh.
+*
+!.gitignore

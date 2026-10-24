@@ -21,6 +21,14 @@ fi
 # export_presets.cfg refers to the template by this path relative to C7, so the preset holds no local paths.
 cp -u "$TEMPLATE" "$OUT/android-template.apk"
 
+# The game data goes into the APK (export filter AndroidData/*); AndroidBootstrap unpacks it into Documents/OpenCiv3
+# when the version differs from the one unpacked there. Windows' own tar writes zip files.
+mkdir -p AndroidData
+rm -f AndroidData/data.zip
+/c/Windows/System32/tar.exe -a -cf AndroidData/data.zip --exclude 'Assets/.git' --exclude 'Assets/.gdignore' \
+	--exclude '*.import' Assets Lua Text
+echo "$(date +%Y%m%d-%H%M%S)-$(git rev-parse --short HEAD)" > AndroidData/data-version.txt
+
 # The game reads Assets from the device; keep the editor from importing 100 MB it does not need.
 touch Assets/.gdignore
 

@@ -58,7 +58,7 @@ Check that scenarios still import:
 dotnet run --project android-port/tools/BiqImportTest -c Release -- "<Civ3>/Conquests/Scenarios/Giant Earth.biq" "<Civ3>" C7/Lua
 ```
 
-Install with `deploy.sh pixel --data`, then `deploy.sh tablet --data`. `--data` replaces Assets, Lua and Text on the device, and the old folders go to `Documents/OpenCiv3-previous`.
+Install with `deploy.sh pixel`, then `deploy.sh tablet`. At its first start the new APK replaces Assets, Lua and Text in `Documents/OpenCiv3` with its own and restarts.
 
 On each device check:
 - **Startup and menus:** the main menu and Quick Start are German.

@@ -13,5 +13,5 @@ dest_files=["res://Translations/ui.de.translation"]
 
 [params]
 
-compress=true
+compress=false
 delimiter=0

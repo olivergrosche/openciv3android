@@ -47,27 +47,33 @@ public partial class MainMenu : Node {
 		} catch (Exception ex) {
 			log.Error(ex, "Could not set up the main menu");
 		}
-
-		if (OS.GetName() == "Android") {
-			EnlargeMenuForTouch();
-		}
 	}
 
 	// The menu buttons are sized for a mouse. On a tablet they get 1.6x larger, on a phone (AndroidBootstrap.TouchUiFactor)
-	// as large as fits between the title and the copyright lines, growing from the menu's top left corner.
+	// as large as fits between the title and the copyright lines and left of the sidebar, growing from the menu's top
+	// left corner. The wider "Civilization III was not found" options would otherwise reach into the sidebar. Measured
+	// again whenever DisplayTitleScreen switches between those options and the menu.
 	private async void EnlargeMenuForTouch() {
 		Control menu = GetNode<Control>("Control/Background/PanelContainer");
 		Control footer = GetNode<Control>("Control/Background/RichTextLabel2");
+		Control sidebar = GetNode<Control>("Control/Background/MarginContainer/PanelContainer2");
+		await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+		menu.ResetSize(); // the container keeps the size of the wider options otherwise
 		await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
 		float scale = 1.6f * AndroidBootstrap.TouchUiFactor;
-		float room = footer.GlobalPosition.Y - 8 - menu.GlobalPosition.Y;
-		if (menu.Size.Y > 0) {
-			scale = Math.Max(1, Math.Min(scale, room / menu.Size.Y));
+		float roomDown = footer.GlobalPosition.Y - 8 - menu.GlobalPosition.Y;
+		float roomRight = sidebar.GlobalPosition.X - 16 - menu.GlobalPosition.X;
+		if (menu.Size.Y > 0 && menu.Size.X > 0) {
+			scale = Math.Max(1, Math.Min(scale, Math.Min(roomDown / menu.Size.Y, roomRight / menu.Size.X)));
 		}
 		menu.Scale = new Vector2(scale, scale);
 	}
 
 	private void DisplayTitleScreen() {
+		if (OS.GetName() == "Android") {
+			EnlargeMenuForTouch();
+		}
+
 		// To pass data between scenes, putting path string in a global singleton and reading it later in createGame
 		Global = GetNode<GlobalSingleton>("/root/GlobalSingleton");
 		Global.ResetLoadGameFields();
@@ -204,6 +210,9 @@ public partial class MainMenu : Node {
 				Title = "Civilization III",
 				DialogText = L.F("There are no Civilization III files in {0}.\nChoose the folder that contains Art and Conquests.", path),
 			};
+			if (OS.GetName() == "Android") {
+				notFound.ContentScaleFactor = 1.2f * AndroidBootstrap.TouchUiFactor;
+			}
 			AddChild(notFound);
 			notFound.PopupCentered();
 			return;
