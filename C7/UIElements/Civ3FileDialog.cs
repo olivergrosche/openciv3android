@@ -32,13 +32,25 @@ public partial class Civ3FileDialog : FileDialog {
 	}
 
 	public void SetDirectoryForLoading(string RelPath) {
-		CurrentDir = Util.Civ3Root + "/" + RelPath;
+		CurrentDir = DirectoryFor(RelPath);
 		FileMode = FileDialog.FileModeEnum.OpenFile;
 	}
 
 	public void SetDirectoryForSaving(string RelPath) {
-		CurrentDir = Util.Civ3Root + "/" + RelPath;
+		CurrentDir = DirectoryFor(RelPath);
 		FileMode = FileDialog.FileModeEnum.SaveFile;
+	}
+
+	// On Android, saved games go to Documents/OpenCiv3/Saves next to the game data. A Civ3 folder copied to the device
+	// has no Conquests/Saves (Civ3 creates it on the first save), and for a missing folder the dialog shows the top of
+	// the shared storage, where saved games then got lost among the user's files.
+	private static string DirectoryFor(string relPath) {
+		if (OS.GetName() == "Android" && relPath == "Conquests/Saves") {
+			string saves = System.IO.Path.Combine(AndroidBootstrap.DataDir, "Saves");
+			System.IO.Directory.CreateDirectory(saves);
+			return saves;
+		}
+		return Util.Civ3Root + "/" + relPath;
 	}
 
 	private void OnFileSelected(string path) {

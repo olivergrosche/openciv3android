@@ -64,8 +64,8 @@ android-port/scripts/deploy.sh tablet        # or pixel; add --data after an upd
 ```
 
 Installing ends a running game; save it first. The devices need:
-- `Documents/Civ3`: Civ3 without exe, dll, pdf and videos, about 1.5 GB. It includes `Conquests/conquests.biq`, the German patch's rules, which scenario loading always reads; GOG has none.
-- `Documents/OpenCiv3`: `Assets`, `Lua` and `Text` from `C7/`, plus `C7.ini` with `civ3InstallDir = /storage/emulated/0/Documents/Civ3`.
+- `Documents/Civ3`: Civ3 without exe, dll, pdf and videos, about 1.5 GB. It includes `Conquests/conquests.biq`, the German patch's rules, which loading a `.biq` scenario always reads; GOG has none. The game also finds Civ3 under any name directly in `Documents` or `Download`. Without Civ3 it runs with OpenCiv3's own graphics; the main menu switch "Grafik: OpenCiv3 / Civilization III" changes between them, and asks for the Civ3 folder if it finds none.
+- `Documents/OpenCiv3`: `Assets`, `Lua` and `Text` from `C7/`, plus `C7.ini` with `civ3InstallDir = /storage/emulated/0/Documents/Civ3`. Saved games go to `Documents/OpenCiv3/Saves`.
 
 `deploy.sh` grants "All files access" (appops MANAGE_EXTERNAL_STORAGE).
 
