@@ -1,16 +1,19 @@
 using System;
 using System.IO;
+using System.Linq;
 using Godot;
 
 /****
 	Android has no writable working directory and no executable folder next to the game data, but C7 reads C7.ini,
 	log.txt, ./Lua, ./Text and Assets relative to those. This autoload is listed first in project settings, so its
 	static constructor runs before GlobalSingleton reads the settings: it switches to DataDir and points CIV3_HOME at
-	Civ3Dir. Both folders are copied to the device by hand; reading them needs the "All files access" permission.
+	the Civ3 files (FindCiv3). Both folders are copied to the device by hand; reading them needs the "All files access"
+	permission.
 ****/
 public partial class AndroidBootstrap : Node {
 	public const string DataDir = "/storage/emulated/0/Documents/OpenCiv3";
 	public const string Civ3Dir = "/storage/emulated/0/Documents/Civ3";
+	public const string SharedStorage = "/storage/emulated/0";
 
 	static AndroidBootstrap() {
 		if (OS.GetName() != "Android") {
@@ -20,13 +23,53 @@ public partial class AndroidBootstrap : Node {
 			Directory.CreateDirectory(DataDir);
 			Directory.SetCurrentDirectory(DataDir);
 			if (System.Environment.GetEnvironmentVariable("CIV3_HOME") == null) {
-				System.Environment.SetEnvironmentVariable("CIV3_HOME", Civ3Dir);
+				System.Environment.SetEnvironmentVariable("CIV3_HOME", FindCiv3() ?? Civ3Dir);
 			}
 		} catch (Exception e) {
 			GD.PrintErr($"OpenCiv3: cannot use {DataDir} ({e.Message}); grant \"All files access\" and restart");
 			OS.RequestPermissions();
 		}
 		MoonSharp.Interpreter.Script.GlobalOptions.Platform = new AndroidLuaPlatform();
+	}
+
+	// Civ3 may be copied to Documents/Civ3 or, under any name, into Documents or Download (such as the GOG folder
+	// "Sid Meier's Civilization III Complete"). Returns the first of these folders that has Civ3's art, or null.
+	public static string FindCiv3() {
+		if (IsCiv3Root(Civ3Dir)) {
+			return Civ3Dir;
+		}
+		foreach (string parent in new[] { "Documents", "Download" }) {
+			try {
+				foreach (string dir in Directory.GetDirectories(Path.Combine(SharedStorage, parent)).Order()) {
+					if (IsCiv3Root(dir)) {
+						return dir;
+					}
+				}
+			} catch (Exception) {
+				// No such folder, or no permission yet.
+			}
+		}
+		return null;
+	}
+
+	// The Civ3 root has Art and either Conquests or civ3PTW; the same test as MainMenu.ClassicGraphicsAvailable.
+	public static bool IsCiv3Root(string dir) {
+		foreach (string basePath in new[] { "Conquests", "civ3PTW", "" }) {
+			if (File.Exists(Path.Combine(dir, basePath, "Art", "buttonsFINAL.pcx"))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// Users often pick Conquests, civ3PTW or Art in the folder dialog instead of the Civ3 folder above them.
+	public static string Civ3RootOf(string dir) {
+		for (string d = dir; !string.IsNullOrEmpty(d); d = Path.GetDirectoryName(d)) {
+			if (IsCiv3Root(d)) {
+				return d;
+			}
+		}
+		return dir;
 	}
 
 	// The interface is laid out for a 768 pixel high screen. On a tablet that is about 12 cm, on a phone in landscape

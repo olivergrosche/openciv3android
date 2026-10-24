@@ -99,15 +99,15 @@ public partial class MainMenu : Node {
 		ButtonContainer.Exit.Pressed += _on_Exit_pressed;
 
 		ButtonContainer.ToggleGraphics.Pressed += () => {
+			// Without Civ3 files, the button asks for their folder (copied to a phone after starting in standalone mode).
+			if (C7Settings.UseStandaloneMode() && !ClassicGraphicsAvailable()) {
+				_on_SetCiv3Home_pressed();
+				return;
+			}
 			Global.ToggleStandaloneMode();
 			GetTree().ChangeSceneToFile("res://UIElements/MainMenu/main_menu.tscn");
 		};
 		SetToggleGraphicsText();
-
-		// We can't toggle to using civ3 graphics in standalone mode.
-		if (C7Settings.UseStandaloneMode() && !ClassicGraphicsAvailable()) {
-			ButtonContainer.ToggleGraphics.Visible = false;
-		}
 
 		// Hide if valid path is present as proven by reaching this point in code
 		NoCiv3Options.Visible = false;
@@ -180,14 +180,41 @@ public partial class MainMenu : Node {
 	}
 
 	private void _on_SetCiv3Home_pressed() {
-		SetCiv3HomeDialog.Popup();
+		if (OS.GetName() == "Android") {
+			// Start where the Civ3 files are copied to, and make the dialog big enough for fingers.
+			SetCiv3HomeDialog.CurrentDir = AndroidBootstrap.SharedStorage + "/Documents";
+			float scale = 1.2f * AndroidBootstrap.TouchUiFactor;
+			Vector2 screen = GetTree().Root.GetVisibleRect().Size - new Vector2(16, 16);
+			SetCiv3HomeDialog.ContentScaleFactor = scale;
+			SetCiv3HomeDialog.Size = new Vector2I((int)Math.Min(357 * scale * 1.6f, screen.X), (int)Math.Min(450 * scale, screen.Y));
+		}
+		SetCiv3HomeDialog.PopupCentered();
 	}
 
 	private void _on_SetCiv3HomeDialog_dir_selected(string path) {
+		path = AndroidBootstrap.Civ3RootOf(path);
+		string previous = Util.Civ3Root;
 		Util.Civ3Root = path;
+		if (!ClassicGraphicsAvailable()) {
+			// Keep the old setting, so that a wrong pick does not hide Civ3 files that are found automatically later.
+			Util.Civ3Root = previous;
+			var notFound = new AcceptDialog {
+				Title = "Civilization III",
+				DialogText = L.F("There are no Civilization III files in {0}.\nChoose the folder that contains Art and Conquests.", path),
+			};
+			AddChild(notFound);
+			notFound.PopupCentered();
+			return;
+		}
 		C7Settings.SetValue("locations", "civ3InstallDir", path);
 		C7Settings.SaveSettings();
-		// This function should only be reachable if DisplayTitleScreen failed on previous runs, so should be OK to run here
+		if (C7Settings.UseStandaloneMode()) {
+			// Reached from the media button in standalone mode: switch to the Civ3 media right away.
+			Global.ToggleStandaloneMode();
+			GetTree().ChangeSceneToFile("res://UIElements/MainMenu/main_menu.tscn");
+			return;
+		}
+		// Reached from NoCiv3Options, shown when DisplayTitleScreen found no Civ3 files.
 		DisplayTitleScreen();
 	}
 
