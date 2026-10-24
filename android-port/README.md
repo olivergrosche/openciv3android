@@ -73,7 +73,7 @@ The APK carries the game data (`Assets`, `Lua`, `Text`) as `AndroidData/data.zip
 
 - **First start and data** (`AndroidBootstrap.cs`, the first autoload):
   - Without "All files access", Android hides every file in `Documents` that is not a picture, video or sound. A setup screen therefore covers the main menu and explains the permission; its button opens Android's page for it.
-  - When the permission is there and `Documents/OpenCiv3/.data-version` differs from the APK's `data-version.txt`, the app unpacks the game data, with a progress line. The APK stores the zip compressed, where every seek would inflate it again from the start, so the zip is first copied to the app's cache in one go; 100 MB then take about 3 seconds. `C7.ini`, `Saves` and `log.txt` stay.
+  - When the permission is there and `Documents/OpenCiv3/.data-version` differs from the APK's `data-version.txt`, the app unpacks the game data, with a progress line. The APK stores the zip compressed, where every seek would inflate it again from the start, so the zip is first copied to the app's cache in one go; 100 MB then take about 3 seconds on the tablet and 20 on the Pixel. `C7.ini`, `Saves` and `log.txt` stay.
   - Afterwards the app restarts itself (Godot's `ProcessPhoenix` through `JavaClassWrapper`), because the game reads its settings and rules only at start.
 - **Data paths:** `AndroidBootstrap.cs` also:
   - switches to `Documents/OpenCiv3`;
