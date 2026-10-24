@@ -111,6 +111,19 @@ Installing ends a running game; save it first. The devices need:
 
   `export_presets.cfg` has an "Android" preset: arm64, Assets excluded, patched template. The signing key comes from the `GODOT_ANDROID_KEYSTORE_RELEASE_*` variables in `env.local.sh`.
 
+## Giant Earth
+
+The release has Yoda Power's 256x256 Giant Earth scenario from CivFanatics as OpenCiv3 JSON (`giant-earth-openciv3android.zip`). The author's terms: "You are FREE to use, modify, and post your own work of the map as you like, without asking for my approval."
+
+The import writes the art mappings of the scenario's `PediaIcons.txt` into the JSON. The JSON therefore runs with a plain Civ3 Complete, without the scenario's own folder and without `conquests.biq`. The one exception is the scenario's own musketman art, which the second command below swaps for Civ3's. To rebuild it:
+
+```
+dotnet run --project android-port/tools/BiqImportTest -c Release -- "<Civ3>/Conquests/Scenarios/Giant Earth.biq" "<Civ3>" C7/Lua "android-port/out/scenarios/Giant Earth.json"
+sed -i 's/"defaultName": "Musketmanny"/"defaultName": "Musketman"/' "android-port/out/scenarios/Giant Earth.json"
+```
+
+The import itself needs the original download's `Giant Earth` folder (for its `PediaIcons.txt`) and `Conquests/conquests.biq` in `<Civ3>`. Neither the folder nor any Civ3 file goes into the release.
+
 ## German translation
 
 Godot CSV translations in `C7/Translations`, following the system language:
