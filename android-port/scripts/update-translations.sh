@@ -8,8 +8,10 @@ set -euo pipefail
 source "$(dirname "$0")/env.sh"
 cd "$REPO"
 
-# Names of units, buildings, techs, civilizations, cities etc. from OpenCiv3's rules.
-perl android-port/l10n/name-keys.pl C7/Lua/civ3/ruleset.json > "$OUT/name_keys.txt"
+# Names of units, buildings, techs, civilizations, cities etc. from OpenCiv3's rules and from the scenarios exported
+# to android-port/out/scenarios (see android-port/README.md, "Giant Earth").
+shopt -s nullglob
+perl android-port/l10n/name-keys.pl C7/Lua/civ3/ruleset.json "$OUT"/scenarios/*.json > "$OUT/name_keys.txt"
 perl android-port/l10n/make-ui-csv.pl android-port/l10n/names_de.tsv C7/Translations/names.csv "$OUT/name_keys.txt" \
 	| tee "$OUT/untranslated-names.txt"
 
